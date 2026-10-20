@@ -22,7 +22,7 @@ import {
   X,
 } from "lucide-react";
 import { BodyMap } from "./BodyMap";
-import { OrganViewer, type OrganViewerHandle } from "./OrganViewer";
+import { OrganViewer, type LessonEntry, type OrganViewerHandle } from "./OrganViewer";
 import type { OrganId } from "../lib/anatomy-data";
 import type { LocaleConfig } from "../i18n/config";
 import { locales } from "../i18n/config";
@@ -152,6 +152,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
   const [mobileLibrary, setMobileLibrary] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
   const [lessonActive, setLessonActive] = useState(false);
+  const [lessonEntry, setLessonEntry] = useState<LessonEntry>("start");
   const [animating, setAnimating] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<OrganViewerHandle>(null);
@@ -200,11 +201,13 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     setAnimating(false);
   };
 
-  const startLesson = () => {
+  const startLesson = (entry: LessonEntry = "start") => {
     setPanel(null);
     setQuizActive(false);
     setAnimating(false);
+    setLessonEntry(entry);
     setLessonActive(true);
+    viewerRef.current?.reveal();
   };
 
   const startQuiz = () => {
@@ -242,7 +245,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
           <button type="button" className={nav === "systems" ? "active" : ""} onClick={() => setPanel(panel === "systems" ? null : "systems")}>
             <BrainCircuit size={17} /> {t.nav.systems}
           </button>
-          <button type="button" className={nav === "lessons" ? "active" : ""} onClick={startLesson}>
+          <button type="button" className={nav === "lessons" ? "active" : ""} onClick={() => startLesson()}>
             <BookOpen size={17} /> {t.nav.lessons}
           </button>
           <button type="button" className={nav === "library" ? "active" : ""} onClick={() => setPanel(panel === "library" ? null : "library")}>
@@ -301,6 +304,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
           quizActive={quizActive}
           onQuizExit={() => setQuizActive(false)}
           lessonActive={lessonActive}
+          lessonEntry={lessonEntry}
           onLessonExit={() => setLessonActive(false)}
           animating={animating}
           onAnimateStop={() => setAnimating(false)}
@@ -328,7 +332,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
           </dl>
           <div className="medical-note" data-reveal><Stethoscope size={16} /><p><b>{t.info.medical}</b>{organ.medical}</p></div>
           <div className="fun-note" data-reveal><Sparkles size={15} /><p><b>{t.info.didYouKnow}</b>{organ.funFact}</p></div>
-          <button className="lesson-button" data-reveal onClick={startLesson}>{t.info.viewLesson} <ArrowRight size={16} /></button>
+          <button className="lesson-button" data-reveal onClick={() => startLesson()}>{t.info.viewLesson} <ArrowRight size={16} /></button>
           <div className="action-grid" data-reveal>
             <button onClick={startAnimation} className={animating ? "active" : ""}><Play size={15} /> {t.info.animate}</button>
             <button onClick={startQuiz} className={quizActive ? "active" : ""}><CircleHelp size={15} /> {t.info.quiz}</button>
@@ -385,7 +389,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
         <article>
           <header><div><em>{t.cards.microscopic}</em><h3>{organ.tissue}</h3></div><Microscope size={17} /></header>
           <div className="microscope-visual organ-card-image"><OrganArt organ={organ} asset="microscopic" alt="" /></div>
-          <button onClick={startLesson}>{t.cards.exploreTissue} <ArrowRight size={14} /></button>
+          <button type="button" onClick={() => startLesson()}>{t.cards.exploreTissue} <ArrowRight size={14} /></button>
         </article>
         <article>
           <header><div><em>{t.cards.compareOrgans}</em><h3>{organ.comparison}</h3></div><Share2 size={17} /></header>
@@ -411,7 +415,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
         <article>
           <header><div><em>{t.cards.clinicalNotes}</em><h3>{t.cards.commonConditions}</h3></div><FileText size={17} /></header>
           <ul>{organ.conditions.map((condition) => <li key={condition}>{condition}</li>)}</ul>
-          <button onClick={startLesson}>{t.cards.seeAll} <ArrowRight size={14} /></button>
+          <button type="button" onClick={() => startLesson("clinical")}>{t.cards.seeAll} <ArrowRight size={14} /></button>
         </article>
         <article className="system-card">
           <header><div><em>{t.cards.whereItWorks}</em><h3>{organ.system}</h3></div><BrainCircuit size={17} /></header>

@@ -37,10 +37,14 @@ type Props = {
   onAnimateStop: () => void;
   /** All organ GLB URLs (with base path) so idle preload can warm the rest. */
   modelUrls: string[];
+  lessonEntry: LessonEntry;
 };
+
+export type LessonEntry = "start" | "clinical";
 
 export type OrganViewerHandle = {
   prefetch: (url: string) => void;
+  reveal: () => void;
 };
 
 function motionFor(id: OrganId): "pulse" | "breathe" | "wave" {
@@ -79,15 +83,16 @@ function buildLesson(organ: Organ): LessonStep[] {
 }
 
 function LessonTour({
-  organ, t, onFocus, onExit,
+  organ, t, onFocus, onExit, entry,
 }: {
   organ: Organ;
   t: UiDictionary;
   onFocus: (id: string | null) => void;
   onExit: () => void;
+  entry: LessonEntry;
 }) {
   const steps = useMemo(() => buildLesson(organ), [organ]);
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(() => (entry === "clinical" ? Math.max(0, steps.length - 1) : 0));
   const step = steps[index];
   const last = index >= steps.length - 1;
 
@@ -268,9 +273,10 @@ function useAuthoringFlag() {
 export const OrganViewer = forwardRef<OrganViewerHandle, Props>(function OrganViewer({
   organ, t, autoRotate, onAutoRotate, compare, onCompare,
   quizActive, onQuizExit, lessonActive, onLessonExit, animating, onAnimateStop,
-  modelUrls,
+  modelUrls, lessonEntry,
 }: Props, ref) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const shellRef = useRef<HTMLElement>(null);
   const viewerRef = useRef<AnatomyViewer | null>(null);
   const organRef = useRef(organ);
   const modelUrlsRef = useRef(modelUrls);
@@ -318,6 +324,9 @@ export const OrganViewer = forwardRef<OrganViewerHandle, Props>(function OrganVi
   useImperativeHandle(ref, () => ({
     prefetch(url: string) {
       viewerRef.current?.prefetch(url);
+    },
+    reveal() {
+      shellRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     },
   }), []);
 
@@ -440,7 +449,7 @@ export const OrganViewer = forwardRef<OrganViewerHandle, Props>(function OrganVi
   ];
 
   return (
-    <section className="viewer-shell" aria-label={format(t.viewer.title, { organ: organ.name })}>
+    <section ref={shellRef} className="viewer-shell" aria-label={format(t.viewer.title, { organ: organ.name })}>
       <div className="viewer-glow" style={{ "--organ-accent": organ.accent } as React.CSSProperties} />
       <div ref={mountRef} className="three-mount" />
 
@@ -499,7 +508,14 @@ export const OrganViewer = forwardRef<OrganViewerHandle, Props>(function OrganVi
       )}
 
       {lessonActive && (
-        <LessonTour key={organ.id} organ={organ} t={t} onFocus={focusHotspot} onExit={onLessonExit} />
+        <LessonTour
+          key={`${organ.id}-${lessonEntry}`}
+          organ={organ}
+          t={t}
+          entry={lessonEntry}
+          onFocus={focusHotspot}
+          onExit={onLessonExit}
+        />
       )}
 
       {animating && (
