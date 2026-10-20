@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useState } from "react";
 import {
   BODY_LABEL_KEYS,
   BODY_MAP_VIEWBOX,
@@ -12,7 +12,7 @@ import {
 import type { OrganId } from "../lib/anatomy-data";
 import type { Organ } from "../i18n/merge";
 import type { UiDictionary } from "../i18n/types";
-import { BodyMapArt } from "./BodyMapArt";
+import { withBasePath } from "../lib/base-path";
 
 const { width: VB_W, height: VB_H } = BODY_MAP_VIEWBOX;
 
@@ -48,19 +48,17 @@ function labelStyle(region: BodyRegion): React.CSSProperties {
   return { left, top, transform: "translate(0, -50%)" };
 }
 
-/** Poster-style leaders: horizontal from the label, then in to the organ. */
 function leaderPath(region: BodyRegion) {
   if (region.id === "bladder") {
-    return `M ${region.x} ${(region.y + 24).toFixed(1)} L ${region.labelX} ${(region.labelY - 4).toFixed(1)}`;
+    return `M ${region.x} ${(region.y + 28).toFixed(1)} L ${region.labelX} ${(region.labelY - 4).toFixed(1)}`;
   }
   const fromLeft = region.labelX < VB_W / 2;
-  const elbowX = fromLeft ? region.x - 28 : region.x + 28;
-  const labelEnd = fromLeft ? region.labelX + 6 : region.labelX - 6;
+  const elbowX = fromLeft ? region.x - 36 : region.x + 36;
+  const labelEnd = fromLeft ? region.labelX + 8 : region.labelX - 8;
   return `M ${labelEnd.toFixed(1)} ${region.labelY} L ${elbowX.toFixed(1)} ${region.labelY} L ${region.x} ${region.y}`;
 }
 
 export function BodyMap({ t, organ, organById, onSelect, onPrefetch }: BodyMapProps) {
-  const clipId = useId();
   const [picked, setPicked] = useState<BodyLandmarkId | null>(null);
   const [hovered, setHovered] = useState<BodyLandmarkId | null>(null);
   const selectedId = picked ?? defaultRegionId(organ.id);
@@ -77,11 +75,6 @@ export function BodyMap({ t, organ, organById, onSelect, onPrefetch }: BodyMapPr
     if (region.organId) onSelect(region.organId);
   };
 
-  const activateId = (id: BodyLandmarkId) => {
-    const region = bodyRegions.find((item) => item.id === id);
-    if (region) activate(region);
-  };
-
   const hoverId = (id: BodyLandmarkId | null) => {
     setHovered(id);
     if (id) {
@@ -93,15 +86,13 @@ export function BodyMap({ t, organ, organById, onSelect, onPrefetch }: BodyMapPr
   return (
     <div className="body-map-layout">
       <div className="body-map-figure" dir="ltr">
+        <img
+          className="body-map-plate"
+          src={withBasePath("/anatomy/body-map.jpg")}
+          alt=""
+          draggable={false}
+        />
         <svg viewBox={`0 0 ${VB_W} ${VB_H}`} aria-hidden="true" className="body-map-svg">
-          <BodyMapArt
-            clipId={clipId}
-            currentId={organ.id}
-            selectedId={selectedId}
-            hoveredId={hovered}
-            onActivate={activateId}
-            onHover={hoverId}
-          />
           {bodyRegions.map((region) => (
             <path
               key={`lead-${region.id}`}

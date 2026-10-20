@@ -1010,7 +1010,7 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(280px, 460px) 252px;
+  grid-template-columns: minmax(300px, 520px) 252px;
   justify-content: center;
   gap: 8px 28px;
   align-items: start;
@@ -1020,13 +1020,24 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
   width: 100%;
   height: auto;
   max-height: calc(92vh - 168px);
-  aspect-ratio: 520 / 720;
+  aspect-ratio: 3 / 4;
   direction: ltr;
 }
-.body-map-svg {
+.body-map-plate {
   display: block;
   width: 100%;
   height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+.body-map-svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 .body-map-skin-fill, .body-map-face {
   fill: url(#skinGrad);
@@ -1046,10 +1057,17 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
   stroke: #c99277;
   stroke-width: 2.2;
 }
+.body-map-muscle { fill: rgba(176, 118, 92, .16); stroke: none; }
+.body-map-rib {
+  fill: none;
+  stroke: rgba(150, 108, 88, .22);
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
 .body-map-diaphragm {
   fill: none;
   stroke: rgba(176, 92, 86, .55);
-  stroke-width: 2.2;
+  stroke-width: 2.4;
   stroke-linecap: round;
 }
 .body-map-fissure, .body-map-coil, .body-map-feature {
@@ -1060,6 +1078,36 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
 }
 .body-map-coil { stroke: rgba(140, 72, 64, .4); }
 .body-map-gloss { fill: rgba(255, 255, 255, .22); stroke: none; pointer-events: none; }
+.body-map-tube {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.body-map-colon-tube {
+  stroke: url(#colonStroke);
+  stroke-width: 28;
+}
+.body-map-colon-haustrum {
+  fill: none;
+  stroke: rgba(92, 60, 40, .22);
+  stroke-width: 28;
+  stroke-dasharray: 10 9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.body-map-gut-tube {
+  stroke: url(#gutStroke);
+  stroke-width: 18;
+}
+.body-map-gut-tube-b {
+  stroke: #e8b4a4;
+  stroke-width: 14;
+}
+.body-map-pancreas-tube {
+  stroke: #d4c08a;
+  stroke-width: 11;
+}
 .body-map-organs .body-map-mark {
   cursor: pointer;
   transition: opacity .18s ease, filter .18s ease;
@@ -1069,8 +1117,8 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
 .body-map-mark.is-selected {
   filter: drop-shadow(0 0 4px rgba(90, 48, 40, .35));
 }
-.body-map-mark.is-current > :is(path, ellipse):not(.body-map-gloss):not(.body-map-fissure):not(.body-map-coil),
-.body-map-mark.is-selected > :is(path, ellipse):not(.body-map-gloss):not(.body-map-fissure):not(.body-map-coil) {
+.body-map-mark.is-current > :is(path, ellipse):not(.body-map-gloss):not(.body-map-fissure):not(.body-map-coil):not(.body-map-tube),
+.body-map-mark.is-selected > :is(path, ellipse):not(.body-map-gloss):not(.body-map-fissure):not(.body-map-coil):not(.body-map-tube) {
   stroke: #5a3028;
   stroke-width: 1.6;
 }
@@ -1175,7 +1223,7 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
   }
   .body-map-figure {
     height: auto;
-    width: min(100%, 340px);
+    width: min(100%, 360px);
     max-height: none;
   }
   .body-map-label { max-width: 96px; font-size: 10px; padding: 2px 6px; }

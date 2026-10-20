@@ -33,7 +33,8 @@ export type BodyRegion = {
   labelY: number;
 };
 
-export const BODY_MAP_VIEWBOX = { width: 520, height: 720 };
+/** Matches `public/anatomy/body-map.jpg` (864×1152, 3:4). */
+export const BODY_MAP_VIEWBOX = { width: 864, height: 1152 };
 
 /** Maps each landmark id to `UiDictionary.bodyMap.labels`. */
 export const BODY_LABEL_KEYS = {
@@ -65,23 +66,23 @@ export function isLandmarkOnly(region: BodyRegion): boolean {
  * Coordinates are authored against the silhouette in `BodyMap.tsx`.
  */
 export const bodyRegions: BodyRegion[] = [
-  { id: "brain", organId: "brain", color: "#c58696", x: 260, y: 58, labelX: 452, labelY: 46 },
-  { id: "eyeball", organId: "eyeball", color: "#7294b9", x: 242, y: 76, labelX: 452, labelY: 86 },
-  { id: "skin", organId: "skin", color: "#c99277", x: 122, y: 210, labelX: 48, labelY: 158 },
-  { id: "right-lung", organId: "lungs", color: "#dd8f8b", x: 200, y: 222, labelX: 48, labelY: 214 },
-  { id: "heart", organId: "heart", color: "#ee7c6a", x: 272, y: 228, labelX: 452, labelY: 220 },
-  { id: "left-lung", organId: "lungs", color: "#dd8f8b", x: 322, y: 222, labelX: 452, labelY: 258 },
-  { id: "liver", organId: "liver", color: "#b86858", x: 210, y: 318, labelX: 48, labelY: 304 },
-  { id: "gallbladder", color: "#7fa88a", x: 194, y: 342, labelX: 48, labelY: 342 },
-  { id: "stomach", color: "#d4a574", x: 304, y: 318, labelX: 452, labelY: 312 },
-  { id: "pancreas", organId: "pancreas", color: "#c69a5e", x: 268, y: 350, labelX: 452, labelY: 352 },
-  { id: "right-kidney", organId: "kidneys", color: "#c96963", x: 172, y: 362, labelX: 48, labelY: 378 },
-  { id: "left-kidney", organId: "kidneys", color: "#c96963", x: 348, y: 362, labelX: 452, labelY: 386 },
-  { id: "transverse-colon", organId: "intestine", color: "#d78b77", x: 260, y: 356, labelX: 48, labelY: 418 },
-  { id: "ascending-colon", organId: "intestine", color: "#d78b77", x: 188, y: 428, labelX: 48, labelY: 458 },
-  { id: "descending-colon", organId: "intestine", color: "#d78b77", x: 340, y: 428, labelX: 452, labelY: 430 },
-  { id: "small-intestine", organId: "intestine", color: "#e0a090", x: 260, y: 430, labelX: 452, labelY: 478 },
-  { id: "bladder", color: "#8eb4c8", x: 260, y: 518, labelX: 260, labelY: 668 },
+  { id: "brain", organId: "brain", color: "#c58696", x: 432, y: 48, labelX: 790, labelY: 44 },
+  { id: "eyeball", organId: "eyeball", color: "#7294b9", x: 398, y: 72, labelX: 790, labelY: 92 },
+  { id: "skin", organId: "skin", color: "#c99277", x: 148, y: 250, labelX: 64, labelY: 180 },
+  { id: "right-lung", organId: "lungs", color: "#dd8f8b", x: 292, y: 330, labelX: 64, labelY: 300 },
+  { id: "heart", organId: "heart", color: "#ee7c6a", x: 486, y: 360, labelX: 790, labelY: 330 },
+  { id: "left-lung", organId: "lungs", color: "#dd8f8b", x: 590, y: 330, labelX: 790, labelY: 400 },
+  { id: "liver", organId: "liver", color: "#b86858", x: 330, y: 530, labelX: 64, labelY: 500 },
+  { id: "gallbladder", color: "#7fa88a", x: 348, y: 600, labelX: 64, labelY: 580 },
+  { id: "stomach", color: "#d4a574", x: 530, y: 575, labelX: 790, labelY: 540 },
+  { id: "pancreas", organId: "pancreas", color: "#c69a5e", x: 470, y: 620, labelX: 790, labelY: 610 },
+  { id: "right-kidney", organId: "kidneys", color: "#c96963", x: 250, y: 610, labelX: 64, labelY: 640 },
+  { id: "left-kidney", organId: "kidneys", color: "#c96963", x: 630, y: 610, labelX: 790, labelY: 670 },
+  { id: "transverse-colon", organId: "intestine", color: "#d78b77", x: 430, y: 655, labelX: 64, labelY: 720 },
+  { id: "ascending-colon", organId: "intestine", color: "#d78b77", x: 258, y: 800, labelX: 64, labelY: 820 },
+  { id: "descending-colon", organId: "intestine", color: "#d78b77", x: 610, y: 800, labelX: 790, labelY: 780 },
+  { id: "small-intestine", organId: "intestine", color: "#e0a090", x: 432, y: 830, labelX: 790, labelY: 880 },
+  { id: "bladder", color: "#8eb4c8", x: 432, y: 935, labelX: 432, labelY: 1095 },
 ];
 
 export function regionsForOrgan(organId: OrganId): BodyRegion[] {
