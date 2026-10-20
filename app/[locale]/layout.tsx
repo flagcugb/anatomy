@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { notFound } from "next/navigation";
-import { getLocale, isLocale, localeCodes, locales } from "../i18n/config";
+import { defaultLocale, getLocale, isLocale, localeCodes, locales } from "../i18n/config";
 import { fontClassName } from "../i18n/fonts";
 import { getDictionary } from "../i18n/dictionaries";
 import "../globals.css";
@@ -40,7 +40,7 @@ export async function generateMetadata({
       // Lets search engines serve the right language and offer the rest.
       languages: {
         ...Object.fromEntries(locales.map((entry) => [entry.code, `/${entry.code}`])),
-        "x-default": "/en",
+        "x-default": `/${defaultLocale}`,
       },
     },
     icons: {

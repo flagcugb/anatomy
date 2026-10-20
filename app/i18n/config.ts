@@ -29,11 +29,13 @@ export const locales: LocaleConfig[] = [
   { code: "ko", nativeName: "한국어",     englishName: "Korean",     country: "South Korea",   dir: "ltr", script: "kr",         intl: "ko_KR" },
 ];
 
-export const defaultLocale = "en";
+export const defaultLocale = "zh";
 export const localeCodes = locales.map((locale) => locale.code);
 
 export function getLocale(code: string): LocaleConfig {
-  return locales.find((locale) => locale.code === code) ?? locales[0];
+  return locales.find((locale) => locale.code === code)
+    ?? locales.find((locale) => locale.code === defaultLocale)
+    ?? locales[0];
 }
 
 export function isLocale(code: string): boolean {
