@@ -17,6 +17,7 @@ import {
 import type { Hotspot, Organ } from "../i18n/merge";
 import { format, type UiDictionary } from "../i18n/types";
 import type { AnatomyViewer } from "../lib/three/viewer";
+import { withBasePath } from "../lib/base-path";
 
 type Props = {
   organ: Organ;
@@ -233,7 +234,7 @@ export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCom
       viewer.setAutoRotate(autoRotateRef.current);
       viewer.setAuthoring(authoringRef.current);
       const current = organRef.current;
-      viewer.setOrgan(current.model, current.hotspots, current.accent).catch(() => {
+      viewer.setOrgan(withBasePath(current.model), current.hotspots, current.accent).catch(() => {
         setLoading(false);
         setProgress(0);
       });
@@ -247,7 +248,7 @@ export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCom
   }, []);
 
   useEffect(() => {
-    viewerRef.current?.setOrgan(organ.model, organ.hotspots, organ.accent).catch(() => {
+    viewerRef.current?.setOrgan(withBasePath(organ.model), organ.hotspots, organ.accent).catch(() => {
       setLoading(false);
       setProgress(0);
     });

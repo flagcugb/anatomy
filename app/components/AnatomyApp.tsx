@@ -29,6 +29,7 @@ import type { LocaleConfig } from "../i18n/config";
 import { locales } from "../i18n/config";
 import { buildOrgans, indexOrgans, type Organ } from "../i18n/merge";
 import { format, type Dictionary, type UiDictionary } from "../i18n/types";
+import { basePath, withBasePath } from "../lib/base-path";
 
 type Modal = "lesson" | "quiz" | "animation" | "system" | null;
 
@@ -61,7 +62,7 @@ function OrganArt({
   return (
     <img
       key={`${organ.id}-${asset}`}
-      src={`/anatomy/${organ.id}/${asset}.webp`}
+      src={withBasePath(`/anatomy/${organ.id}/${asset}.webp`)}
       alt={alt}
       width={size}
       height={size}
@@ -103,7 +104,9 @@ function LanguageSwitcher({ locale, t }: { locale: LocaleConfig; t: UiDictionary
         aria-label={t.language.choose}
         value={locale.code}
         onChange={(event) => {
-          window.location.pathname = `/${event.target.value}`;
+          window.location.pathname = withBasePath(
+            `/${event.target.value}${basePath ? "/" : ""}`,
+          );
         }}
       >
         {locales.map((entry) => (
@@ -152,7 +155,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     if (organById[id].illustrated) {
       ["organ", "microscopic", "compare", "location"].forEach((asset) => {
         const image = new Image();
-        image.src = `/anatomy/${id}/${asset}.webp`;
+        image.src = withBasePath(`/anatomy/${id}/${asset}.webp`);
       });
     }
     setOrganId(id);
@@ -166,7 +169,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
   const prefetchOrgan = (id: OrganId) => {
     if (id === organId || prefetched.current.has(id)) return;
     prefetched.current.add(id);
-    void fetch(organById[id].model, { priority: "low" } as RequestInit).catch(() => {});
+    void fetch(withBasePath(organById[id].model), { priority: "low" } as RequestInit).catch(() => {});
   };
 
   return (
