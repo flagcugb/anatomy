@@ -71,7 +71,6 @@ export const ui: UiDictionary = {
     clinicalNotes: "臨床メモ", whereItWorks: "はたらく場所", commonConditions: "おもな疾患",
     exploreTissue: "組織を見る", openComparison: "比較を開く", playAnimation: "アニメーションを再生",
     seeAll: "すべて見る", seeSystem: "この系統を見る",
-    systemOrgans: "この系統の臓器", seeOrgan: "この臓器を見る", organAria: "{organ}の標本を見る",
     playAria: "{organ}のはたらきのアニメーションを再生", systemAria: "{organ}が体のどこにあるかを見る",
   },
   quiz: {

@@ -52,7 +52,7 @@ export type OrganViewerHandle = {
 };
 
 function motionFor(id: OrganId): "pulse" | "breathe" | "wave" {
-  if (id === "heart" || id === "cardiovascular") return "pulse";
+  if (id === "heart") return "pulse";
   if (id === "lungs") return "breathe";
   return "wave";
 }

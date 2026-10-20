@@ -2,7 +2,6 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { disposeObject } from "./dispose";
-import { buildCardiovascularScene, proceduralKind } from "./cardiovascular";
 
 /** Edge length of the cube every organ is normalised into, so hotspot
  *  coordinates authored in `anatomy-data` mean the same thing for each model. */
@@ -117,13 +116,6 @@ export class AnatomyAssetManager {
   }
 
   private async parse(url: string, onProgress?: (progress: number) => void): Promise<LoadedOrgan> {
-    if (proceduralKind(url) === "cardiovascular") {
-      onProgress?.(0.25);
-      const built = await buildCardiovascularScene(this.loader);
-      onProgress?.(0.9);
-      return this.finish(url, built.model, built.meshes, null);
-    }
-
     const gltf = await this.loader.loadAsync(url, (event) => {
       if (event.total > 0) onProgress?.(Math.min(0.9, event.loaded / event.total));
     });
@@ -177,8 +169,7 @@ export class AnatomyAssetManager {
         material.opacity = 1;
         material.depthWrite = true;
         material.depthTest = true;
-        // Vessel walls are thin tubes; FrontSide punches holes as the camera orbits.
-        material.side = url.includes("cardiovascular") ? THREE.DoubleSide : THREE.FrontSide;
+        material.side = THREE.FrontSide;
         if (material instanceof THREE.MeshStandardMaterial) {
           // A tighter specular lobe sparkles on any surface with normal detail;
           // holding roughness a little higher keeps highlights stable while the

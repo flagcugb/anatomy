@@ -71,7 +71,6 @@ export const ui: UiDictionary = {
     clinicalNotes: "ملاحظات سريرية", whereItWorks: "أين يعمل", commonConditions: "الأمراض الشائعة",
     exploreTissue: "استكشاف النسيج", openComparison: "فتح المقارنة", playAnimation: "تشغيل الرسم المتحرك",
     seeAll: "عرض الكل", seeSystem: "عرض الجهاز",
-    systemOrgans: "أعضاء هذا الجهاز", seeOrgan: "عرض هذا العضو", organAria: "عرض عيّنة {organ}",
     playAria: "تشغيل الرسم المتحرك لوظيفة {organ}", systemAria: "شاهد موضع {organ} في الجسم",
   },
   quiz: {

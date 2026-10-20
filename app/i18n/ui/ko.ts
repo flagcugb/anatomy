@@ -71,7 +71,6 @@ export const ui: UiDictionary = {
     clinicalNotes: "임상 노트", whereItWorks: "작용하는 곳", commonConditions: "흔한 질환",
     exploreTissue: "조직 살펴보기", openComparison: "비교 열기", playAnimation: "애니메이션 재생",
     seeAll: "전체 보기", seeSystem: "계통 보기",
-    systemOrgans: "이 계통의 장기", seeOrgan: "이 장기 보기", organAria: "{organ} 표본 보기",
     playAria: "{organ} 기능 애니메이션 재생", systemAria: "몸에서 {organ}의 위치 보기",
   },
   quiz: {

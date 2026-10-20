@@ -71,7 +71,6 @@ export const ui: UiDictionary = {
     clinicalNotes: "临床要点", whereItWorks: "工作部位", commonConditions: "常见疾病",
     exploreTissue: "探索组织", openComparison: "打开对比", playAnimation: "播放动画",
     seeAll: "查看全部", seeSystem: "查看该系统",
-    systemOrgans: "本系统器官", seeOrgan: "查看该器官", organAria: "查看{organ}标本",
     playAria: "播放{organ}的功能动画", systemAria: "查看{organ}在人体中的位置",
   },
   quiz: {

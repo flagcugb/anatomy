@@ -33,7 +33,6 @@ import { basePath, withBasePath } from "../lib/base-path";
 type Panel = "systems" | "library" | null;
 
 function fallbackCompare(id: OrganId): OrganId {
-  if (id === "cardiovascular") return "heart";
   return id === "heart" ? "brain" : "heart";
 }
 
@@ -446,44 +445,18 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
           <ul>{organ.conditions.map((condition) => <li key={condition}>{condition}</li>)}</ul>
           <button type="button" onClick={() => startLesson("clinical")}>{t.cards.seeAll} <ArrowRight size={14} /></button>
         </article>
-        {organ.kind === "system" ? (
-          <article className="system-card">
-            <header><div><em>{t.cards.systemOrgans}</em><h3>{organ.name}</h3></div><Heart size={17} /></header>
-            <ul className="system-members">
-              {(organ.members ?? []).map((id) => {
-                const member = organById[id];
-                if (!member) return null;
-                return (
-                  <li key={member.id}>
-                    <button type="button" onClick={() => selectOrgan(member.id)}>
-                      {member.name}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-            <button
-              type="button"
-              onClick={() => organ.members?.[0] && selectOrgan(organ.members[0])}
-              aria-label={organ.members?.[0] ? format(t.cards.organAria, { organ: organById[organ.members[0]].name }) : t.cards.seeOrgan}
-            >
-              {t.cards.seeOrgan} <ArrowRight size={14} />
-            </button>
-          </article>
-        ) : (
-          <article className="system-card">
-            <header><div><em>{t.cards.whereItWorks}</em><h3>{organ.system}</h3></div><BrainCircuit size={17} /></header>
-            <button
-              type="button"
-              className="system-visual organ-card-image"
-              onClick={() => (organ.systemId ? selectOrgan(organ.systemId) : setPanel("systems"))}
-              aria-label={organ.systemId ? t.cards.seeSystem : format(t.cards.systemAria, { organ: organ.name })}
-            >
-              <OrganArt organ={organ} asset="location" alt="" />
-            </button>
-            <button onClick={() => (organ.systemId ? selectOrgan(organ.systemId) : setPanel("systems"))}>{t.cards.seeSystem} <ArrowRight size={14} /></button>
-          </article>
-        )}
+        <article className="system-card">
+          <header><div><em>{t.cards.whereItWorks}</em><h3>{organ.system}</h3></div><BrainCircuit size={17} /></header>
+          <button
+            type="button"
+            className="system-visual organ-card-image"
+            onClick={() => setPanel("systems")}
+            aria-label={format(t.cards.systemAria, { organ: organ.name })}
+          >
+            <OrganArt organ={organ} asset="location" alt="" />
+          </button>
+          <button onClick={() => setPanel("systems")}>{t.cards.seeSystem} <ArrowRight size={14} /></button>
+        </article>
       </section>
 
       {panel === "systems" && (
