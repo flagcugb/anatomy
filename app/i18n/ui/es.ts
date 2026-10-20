@@ -20,8 +20,27 @@ export const ui: UiDictionary = {
     quoteLine1: "Aprender es", quoteLine2: "un acto de curiosidad.", quoteSign: "¡Sigue explorando!",
   },
   browse: {
-    systemsLead: "Explora los especímenes según el sistema al que pertenecen.",
+    systemsLead: "Mira dónde se sitúa cada espécimen en el cuerpo.",
     libraryLead: "Todos los órganos que hay ahora en el atelier.",
+  },
+  bodyMap: {
+    lead: "Haz clic en un órgano etiquetado para abrir su espécimen 3D. Algunos puntos son solo de orientación.",
+    landmark: "Solo ubicación",
+    noSpecimen: "Aún no hay espécimen 3D",
+    viewSpecimen: "Ver espécimen 3D",
+    labels: {
+      brain: "Cerebro", eyeball: "Ojo", heart: "Corazón",
+      rightLung: "Pulmón derecho", leftLung: "Pulmón izquierdo", liver: "Hígado",
+      gallbladder: "Vesícula biliar", stomach: "Estómago", pancreas: "Páncreas",
+      rightKidney: "Riñón derecho", leftKidney: "Riñón izquierdo",
+      ascendingColon: "Colon ascendente", transverseColon: "Colon transverso", descendingColon: "Colon descendente",
+      smallIntestine: "Intestino delgado", bladder: "Vejiga", skin: "Piel",
+    },
+    blurbs: {
+      gallbladder: "Una bolsa pequeña que almacena la bilis del hígado y la vierte en el intestino.",
+      stomach: "Un saco muscular que inicia la digestión química y mecánica de los alimentos.",
+      bladder: "Un reservorio elástico que retiene la orina hasta que se vacía.",
+    },
   },
   tools: {
     label: "Herramientas del visor 3D", rotate: "Girar", zoom: "Zoom", isolate: "Aislar",

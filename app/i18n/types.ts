@@ -36,6 +36,21 @@ export type UiDictionary = {
     quoteLine1: string; quoteLine2: string; quoteSign: string;
   };
   browse: { systemsLead: string; libraryLead: string };
+  bodyMap: {
+    lead: string;
+    landmark: string;
+    noSpecimen: string;
+    viewSpecimen: string;
+    labels: {
+      brain: string; eyeball: string; heart: string;
+      rightLung: string; leftLung: string; liver: string;
+      gallbladder: string; stomach: string; pancreas: string;
+      rightKidney: string; leftKidney: string;
+      ascendingColon: string; transverseColon: string; descendingColon: string;
+      smallIntestine: string; bladder: string; skin: string;
+    };
+    blurbs: { gallbladder: string; stomach: string; bladder: string };
+  };
   tools: { label: string; rotate: string; zoom: string; isolate: string; section: string; layers: string; compare: string; reset: string };
   viewer: {
     title: string; canvas: string; tip: string; tipDrag: string; tipScroll: string; tipClick: string;

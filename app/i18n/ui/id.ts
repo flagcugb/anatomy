@@ -20,8 +20,27 @@ export const ui: UiDictionary = {
     quoteLine1: "Belajar adalah", quoteLine2: "sebuah tindakan rasa ingin tahu.", quoteSign: "Teruslah menjelajah!",
   },
   browse: {
-    systemsLead: "Telusuri spesimen menurut sistem tempat organ itu berada.",
+    systemsLead: "Lihat di mana setiap spesimen berada di tubuh.",
     libraryLead: "Semua organ yang saat ini ada di atelier.",
+  },
+  bodyMap: {
+    lead: "Klik organ berlabel untuk membuka spesimen 3D. Lambung, kandung empedu, dan kandung kemih hanya penanda posisi.",
+    landmark: "Hanya lokasi",
+    noSpecimen: "Belum ada spesimen 3D",
+    viewSpecimen: "Lihat spesimen 3D",
+    labels: {
+      brain: "Otak", eyeball: "Mata", heart: "Jantung",
+      rightLung: "Paru kanan", leftLung: "Paru kiri", liver: "Hati",
+      gallbladder: "Kandung empedu", stomach: "Lambung", pancreas: "Pankreas",
+      rightKidney: "Ginjal kanan", leftKidney: "Ginjal kiri",
+      ascendingColon: "Usus besar menaik", transverseColon: "Usus besar melintang", descendingColon: "Usus besar menurun",
+      smallIntestine: "Usus halus", bladder: "Kandung kemih", skin: "Kulit",
+    },
+    blurbs: {
+      gallbladder: "Kantong kecil yang menyimpan empedu dari hati dan melepaskannya ke usus.",
+      stomach: "Kantong berotot yang memulai pencernaan kimia dan mekanis makanan.",
+      bladder: "Wadah yang dapat meregang dan menahan urin sampai dikosongkan.",
+    },
   },
   tools: {
     label: "Alat penampil 3D", rotate: "Putar", zoom: "Perbesar", isolate: "Isolasi",

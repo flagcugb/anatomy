@@ -20,8 +20,27 @@ export const ui: UiDictionary = {
     quoteLine1: "التعلّم", quoteLine2: "فعلٌ من أفعال الفضول.", quoteSign: "واصل الاستكشاف!",
   },
   browse: {
-    systemsLead: "تصفّح العيّنات حسب الجهاز الذي تنتمي إليه.",
+    systemsLead: "انظر أين يقع كل عيّنة في الجسم.",
     libraryLead: "كل الأعضاء الموجودة حالياً في المشغل.",
+  },
+  bodyMap: {
+    lead: "انقر على عضو معلّم لفتح عيّنته ثلاثية الأبعاد. المعدة والمرارة والمثانة للتموضع فقط.",
+    landmark: "الموقع فقط",
+    noSpecimen: "لا عيّنة ثلاثية الأبعاد بعد",
+    viewSpecimen: "عرض العيّنة ثلاثية الأبعاد",
+    labels: {
+      brain: "الدماغ", eyeball: "العين", heart: "القلب",
+      rightLung: "الرئة اليمنى", leftLung: "الرئة اليسرى", liver: "الكبد",
+      gallbladder: "المرارة", stomach: "المعدة", pancreas: "البنكرياس",
+      rightKidney: "الكلية اليمنى", leftKidney: "الكلية اليسرى",
+      ascendingColon: "القولون الصاعد", transverseColon: "القولون المستعرض", descendingColon: "القولون النازل",
+      smallIntestine: "الأمعاء الدقيقة", bladder: "المثانة", skin: "الجلد",
+    },
+    blurbs: {
+      gallbladder: "كيس صغير يخزّن الصفراء من الكبد ويُفرغها إلى الأمعاء.",
+      stomach: "كيس عضلي يبدأ الهضم الكيميائي والميكانيكي للطعام.",
+      bladder: "خزان قابل للتمدد يحفظ البول حتى يُفرَغ.",
+    },
   },
   tools: {
     label: "أدوات العارض ثلاثي الأبعاد", rotate: "تدوير", zoom: "تكبير", isolate: "عزل",

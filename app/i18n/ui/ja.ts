@@ -20,8 +20,27 @@ export const ui: UiDictionary = {
     quoteLine1: "学びとは", quoteLine2: "好奇心のいとなみ。", quoteSign: "探索を続けよう！",
   },
   browse: {
-    systemsLead: "所属する系統ごとに標本を見る。",
+    systemsLead: "各標本が体のどこにあるかを見る。",
     libraryLead: "アトリエに収録されているすべての臓器。",
+  },
+  bodyMap: {
+    lead: "ラベルのついた臓器をクリックすると 3D 標本が開きます。胃・胆嚢・膀胱は位置の目安です。",
+    landmark: "位置のみ",
+    noSpecimen: "3D 標本はまだありません",
+    viewSpecimen: "3D 標本を見る",
+    labels: {
+      brain: "脳", eyeball: "眼", heart: "心臓",
+      rightLung: "右肺", leftLung: "左肺", liver: "肝",
+      gallbladder: "胆嚢", stomach: "胃", pancreas: "膵臓",
+      rightKidney: "右腎", leftKidney: "左腎",
+      ascendingColon: "上行結腸", transverseColon: "横行結腸", descendingColon: "下行結腸",
+      smallIntestine: "小腸", bladder: "膀胱", skin: "皮膚",
+    },
+    blurbs: {
+      gallbladder: "肝臓の胆汁を蓄え、腸へ放出する小さな袋。",
+      stomach: "食物の化学的・機械的消化を始める筋性の袋。",
+      bladder: "排出するまで尿をためておく伸縮する袋。",
+    },
   },
   tools: {
     label: "3D ビューアのツール", rotate: "回転", zoom: "ズーム", isolate: "単独表示",

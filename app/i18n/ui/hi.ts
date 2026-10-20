@@ -20,8 +20,27 @@ export const ui: UiDictionary = {
     quoteLine1: "सीखना", quoteLine2: "जिज्ञासा का कार्य है।", quoteSign: "खोजते रहिए!",
   },
   browse: {
-    systemsLead: "अंगों को उनके तंत्र के अनुसार देखें।",
+    systemsLead: "देखें कि प्रत्येक नमूना शरीर में कहाँ बैठा है।",
     libraryLead: "अटेलियर में अभी उपलब्ध सभी अंग।",
+  },
+  bodyMap: {
+    lead: "लेबल वाले अंग पर क्लिक करें और उसका 3D नमूना खोलें। पेट, पित्ताशय और मूत्राशय केवल स्थिति दिखाने के लिए हैं।",
+    landmark: "केवल स्थान",
+    noSpecimen: "अभी 3D नमूना नहीं है",
+    viewSpecimen: "3D नमूना देखें",
+    labels: {
+      brain: "मस्तिष्क", eyeball: "आँख", heart: "हृदय",
+      rightLung: "दायाँ फेफड़ा", leftLung: "बायाँ फेफड़ा", liver: "यकृत",
+      gallbladder: "पित्ताशय", stomach: "आमाशय", pancreas: "अग्न्याशय",
+      rightKidney: "दायाँ गुर्दा", leftKidney: "बायाँ गुर्दा",
+      ascendingColon: "आरोही बृहदांत्र", transverseColon: "अनुप्रस्थ बृहदांत्र", descendingColon: "अवरोही बृहदांत्र",
+      smallIntestine: "क्षुद्रांत्र", bladder: "मूत्राशय", skin: "त्वचा",
+    },
+    blurbs: {
+      gallbladder: "एक छोटी थैली जो यकृत की पित्त को जमा कर आँत में छोड़ती है।",
+      stomach: "एक पेशीय थैली जो भोजन का रासायनिक और यांत्रिक पाचन शुरू करती है।",
+      bladder: "एक लचीला भंडार जो खाली होने तक मूत्र रोकता है।",
+    },
   },
   tools: {
     label: "3D दर्शक उपकरण", rotate: "घुमाएँ", zoom: "ज़ूम", isolate: "अलग करें",

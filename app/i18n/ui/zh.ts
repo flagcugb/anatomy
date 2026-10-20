@@ -20,8 +20,27 @@ export const ui: UiDictionary = {
     quoteLine1: "学习", quoteLine2: "是一种好奇心。", quoteSign: "继续探索吧！",
   },
   browse: {
-    systemsLead: "按所属系统浏览标本。",
+    systemsLead: "看标本在人体中的位置。",
     libraryLead: "工作室中目前收录的全部器官。",
+  },
+  bodyMap: {
+    lead: "点击有标注的器官即可打开 3D 标本。胃、胆囊、膀胱仅作位置参照。",
+    landmark: "仅位置标注",
+    noSpecimen: "暂无 3D 标本",
+    viewSpecimen: "查看 3D 标本",
+    labels: {
+      brain: "大脑", eyeball: "眼", heart: "心脏",
+      rightLung: "右肺", leftLung: "左肺", liver: "肝",
+      gallbladder: "胆囊", stomach: "胃", pancreas: "胰腺",
+      rightKidney: "右肾", leftKidney: "左肾",
+      ascendingColon: "升结肠", transverseColon: "横结肠", descendingColon: "降结肠",
+      smallIntestine: "小肠", bladder: "膀胱", skin: "皮肤",
+    },
+    blurbs: {
+      gallbladder: "储存肝脏分泌的胆汁，并在消化时释放到肠道。",
+      stomach: "一个肌性囊袋，开始对食物进行化学与机械消化。",
+      bladder: "有弹性的储尿囊，在排空之前暂时容纳尿液。",
+    },
   },
   tools: {
     label: "3D 查看器工具", rotate: "旋转", zoom: "缩放", isolate: "单独显示",

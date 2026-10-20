@@ -20,8 +20,27 @@ export const ui: UiDictionary = {
     quoteLine1: "배움은", quoteLine2: "호기심의 행위입니다.", quoteSign: "계속 탐색해 보세요!",
   },
   browse: {
-    systemsLead: "장기가 속한 계통별로 표본을 살펴보세요.",
+    systemsLead: "각 표본이 몸에 어디에 있는지 보세요.",
     libraryLead: "아틀리에에 현재 수록된 모든 장기.",
+  },
+  bodyMap: {
+    lead: "라벨이 있는 장기를 누르면 3D 표본이 열립니다. 위·쓸개·방광은 위치만 표시합니다.",
+    landmark: "위치만",
+    noSpecimen: "아직 3D 표본이 없습니다",
+    viewSpecimen: "3D 표본 보기",
+    labels: {
+      brain: "뇌", eyeball: "눈", heart: "심장",
+      rightLung: "오른폐", leftLung: "왼폐", liver: "간",
+      gallbladder: "쓸개", stomach: "위", pancreas: "췌장",
+      rightKidney: "오른콩팥", leftKidney: "왼콩팥",
+      ascendingColon: "오름잘록창자", transverseColon: "가로잘록창자", descendingColon: "내림잘록창자",
+      smallIntestine: "작은창자", bladder: "방광", skin: "피부",
+    },
+    blurbs: {
+      gallbladder: "간에서 만든 쓸개즙을 저장했다가 창자로 내보내는 작은 주머니.",
+      stomach: "음식의 화학적·기계적 소화를 시작하는 근육성 주머니.",
+      bladder: "비울 때까지 소변을 담아 두는 늘어나는 저장소.",
+    },
   },
   tools: {
     label: "3D 뷰어 도구", rotate: "회전", zoom: "확대", isolate: "단독 보기",

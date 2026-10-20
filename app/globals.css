@@ -691,7 +691,8 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
 [dir="rtl"] .organ-card-image,
 [dir="rtl"] .modal-figure,
 [dir="rtl"] .specimen-stamp,
-[dir="rtl"] .organ-glyph { direction: ltr; }
+[dir="rtl"] .organ-glyph,
+[dir="rtl"] .body-map-figure { direction: ltr; }
 
 /* Chevrons and arrows point the reading direction. */
 [dir="rtl"] .view-all svg,
@@ -997,5 +998,187 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
 }
 .catalog-card b { font: 500 16px/1.15 var(--font-serif), serif; }
 .catalog-card small { color: var(--muted); font-size: 10px; }
+
+.body-map-panel {
+  width: min(1180px, 100%);
+  max-height: min(92vh, 920px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.body-map-layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(280px, 460px) 252px;
+  justify-content: center;
+  gap: 8px 28px;
+  align-items: start;
+}
+.body-map-figure {
+  position: relative;
+  width: 100%;
+  height: auto;
+  max-height: calc(92vh - 168px);
+  aspect-ratio: 520 / 720;
+  direction: ltr;
+}
+.body-map-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.body-map-skin-fill, .body-map-face {
+  fill: url(#skinGrad);
+  stroke: #c4a08a;
+  stroke-width: 1.4;
+}
+.body-map-hair { fill: #3d2a24; stroke: #2a1c18; stroke-width: 1; }
+.body-map-ear { fill: #e0b496; stroke: #c4a08a; stroke-width: .8; }
+.body-map-neck-shade { fill: rgba(176, 120, 92, .18); stroke: none; }
+.body-map-clavicle {
+  fill: none;
+  stroke: rgba(156, 110, 86, .35);
+  stroke-width: 1.2;
+}
+.body-map-figure-skin.is-selected .body-map-skin-fill,
+.body-map-figure-skin.is-selected .body-map-face {
+  stroke: #c99277;
+  stroke-width: 2.2;
+}
+.body-map-diaphragm {
+  fill: none;
+  stroke: rgba(176, 92, 86, .55);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+.body-map-fissure, .body-map-coil, .body-map-feature {
+  fill: none;
+  stroke: rgba(90, 50, 44, .32);
+  stroke-width: 1;
+  pointer-events: none;
+}
+.body-map-coil { stroke: rgba(140, 72, 64, .4); }
+.body-map-gloss { fill: rgba(255, 255, 255, .22); stroke: none; pointer-events: none; }
+.body-map-organs .body-map-mark {
+  cursor: pointer;
+  transition: opacity .18s ease, filter .18s ease;
+}
+.body-map-mark.is-dim { opacity: .42; }
+.body-map-mark.is-current,
+.body-map-mark.is-selected {
+  filter: drop-shadow(0 0 4px rgba(90, 48, 40, .35));
+}
+.body-map-mark.is-current > :is(path, ellipse):not(.body-map-gloss):not(.body-map-fissure):not(.body-map-coil),
+.body-map-mark.is-selected > :is(path, ellipse):not(.body-map-gloss):not(.body-map-fissure):not(.body-map-coil) {
+  stroke: #5a3028;
+  stroke-width: 1.6;
+}
+.body-map-mark .body-map-pupil { fill: #2f2a27; stroke: none; }
+.body-map-leader {
+  fill: none;
+  stroke: rgba(117, 91, 70, 0.38);
+  stroke-width: 1;
+  pointer-events: none;
+}
+.body-map-leader.is-active { stroke: rgba(117, 91, 70, 0.7); stroke-width: 1.3; }
+.body-map-hotspot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid #fffaf2;
+  border-radius: 50%;
+  background: var(--pin-color);
+  box-shadow: 0 0 0 1px rgba(90, 60, 44, .2);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 1;
+}
+.body-map-hotspot.is-current,
+.body-map-hotspot.is-selected,
+.body-map-hotspot.is-hot {
+  width: 10px;
+  height: 10px;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--pin-color) 40%, transparent);
+}
+.body-map-label {
+  position: absolute;
+  z-index: 2;
+  max-width: 128px;
+  padding: 3px 8px;
+  border: 1px solid color-mix(in srgb, var(--pin-color), transparent 55%);
+  border-radius: 999px;
+  background: rgba(255, 251, 244, 0.92);
+  color: var(--ink);
+  cursor: pointer;
+  font: 500 11px/1.25 var(--font-serif), serif;
+  text-align: start;
+  white-space: normal;
+}
+.body-map-label.is-current,
+.body-map-label.is-selected {
+  background: color-mix(in srgb, var(--pin-color) 18%, #fffaf2);
+  border-color: var(--pin-color);
+}
+.body-map-aside {
+  padding: 16px 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.4);
+}
+.body-map-aside em {
+  color: var(--lavender);
+  font-family: "Comic Sans MS", "Bradley Hand", cursive;
+  font-style: italic;
+  font-size: 12px;
+}
+.body-map-aside h3 {
+  margin: 6px 0 10px;
+  font: 500 26px/1.15 var(--font-serif), serif;
+}
+.body-map-aside p {
+  margin: 0;
+  color: #6e655f;
+  font: 500 14px/1.5 var(--font-serif), serif;
+}
+.body-map-aside button {
+  margin-top: 16px;
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  font: 500 13px var(--font-serif), serif;
+}
+.body-map-aside small {
+  display: block;
+  margin-top: 14px;
+  color: var(--muted);
+  font: 500 12px var(--font-serif), serif;
+}
+
+@media (max-width: 860px) {
+  .body-map-panel { overflow: auto; }
+  .body-map-layout { grid-template-columns: 1fr; }
+  .body-map-aside {
+    order: -1;
+    padding: 12px 14px 14px;
+  }
+  .body-map-aside h3 { font-size: 22px; margin: 4px 0 6px; }
+  .body-map-aside p {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .body-map-figure {
+    height: auto;
+    width: min(100%, 340px);
+    max-height: none;
+  }
+  .body-map-label { max-width: 96px; font-size: 10px; padding: 2px 6px; }
+}
 
 [dir="rtl"] .lesson-nav svg { transform: scaleX(-1); }

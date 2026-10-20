@@ -20,8 +20,27 @@ export const ui: UiDictionary = {
     quoteLine1: "Lernen ist", quoteLine2: "ein Akt der Neugier.", quoteSign: "Weiter entdecken!",
   },
   browse: {
-    systemsLead: "Präparate nach dem System durchstöbern, zu dem sie gehören.",
+    systemsLead: "Sieh, wo jedes Präparat im Körper sitzt.",
     libraryLead: "Alle Organe, die derzeit im Atelier sind.",
+  },
+  bodyMap: {
+    lead: "Klicke auf ein beschriftetes Organ, um das 3D-Präparat zu öffnen. Einige Marken dienen nur der Orientierung.",
+    landmark: "Nur Lage",
+    noSpecimen: "Noch kein 3D-Präparat",
+    viewSpecimen: "3D-Präparat ansehen",
+    labels: {
+      brain: "Gehirn", eyeball: "Auge", heart: "Herz",
+      rightLung: "Rechte Lunge", leftLung: "Linke Lunge", liver: "Leber",
+      gallbladder: "Gallenblase", stomach: "Magen", pancreas: "Bauchspeicheldrüse",
+      rightKidney: "Rechte Niere", leftKidney: "Linke Niere",
+      ascendingColon: "Aufsteigender Dickdarm", transverseColon: "Querdarm", descendingColon: "Absteigender Dickdarm",
+      smallIntestine: "Dünndarm", bladder: "Harnblase", skin: "Haut",
+    },
+    blurbs: {
+      gallbladder: "Ein kleiner Beutel, der Galle aus der Leber speichert und in den Darm abgibt.",
+      stomach: "Ein muskulärer Sack, der die chemische und mechanische Verdauung der Nahrung beginnt.",
+      bladder: "Ein dehnbares Reservoir, das Urin bis zur Entleerung hält.",
+    },
   },
   tools: {
     label: "Werkzeuge des 3D-Betrachters", rotate: "Drehen", zoom: "Zoom", isolate: "Isolieren",

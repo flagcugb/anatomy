@@ -21,6 +21,7 @@ import {
   Stethoscope,
   X,
 } from "lucide-react";
+import { BodyMap } from "./BodyMap";
 import { OrganViewer } from "./OrganViewer";
 import type { OrganId } from "../lib/anatomy-data";
 import type { LocaleConfig } from "../i18n/config";
@@ -49,21 +50,6 @@ function organHaystack(item: Organ) {
     ...item.conditions,
     ...item.hotspots.flatMap((hotspot) => [hotspot.label, hotspot.detail]),
   ].join(" ");
-}
-
-function groupBySystem(organs: Organ[]) {
-  const groups: { system: string; organs: Organ[] }[] = [];
-  const index = new Map<string, Organ[]>();
-  for (const organ of organs) {
-    let list = index.get(organ.system);
-    if (!list) {
-      list = [];
-      index.set(organ.system, list);
-      groups.push({ system: organ.system, organs: list });
-    }
-    list.push(organ);
-  }
-  return groups;
 }
 
 /**
@@ -176,8 +162,6 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     if (!needle) return organs;
     return organs.filter((item) => organHaystack(item).toLocaleLowerCase(locale.code).includes(needle));
   }, [organs, query, locale.code]);
-  const allSystemGroups = useMemo(() => groupBySystem(organs), [organs]);
-
   useEffect(() => {
     if (!contentRef.current) return;
     gsap.fromTo(contentRef.current.querySelectorAll("[data-reveal]"),
@@ -442,14 +426,28 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
         </article>
       </section>
 
-      {panel && (
+      {panel === "systems" && (
+        <div className="modal-backdrop browse-backdrop" role="presentation" onMouseDown={() => setPanel(null)}>
+          <section
+            className="browse-panel body-map-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="browse-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button className="modal-close" onClick={() => setPanel(null)} aria-label={t.modal.close}><X size={18} /></button>
+            <em>{t.modal.guided}</em>
+            <h2 id="browse-title">{t.nav.systems}</h2>
+            <p>{t.bodyMap.lead}</p>
+            <BodyMap t={t} organ={organ} organById={organById} onSelect={selectOrgan} onPrefetch={prefetchOrgan} />
+          </section>
+        </div>
+      )}
+      {panel === "library" && (
         <BrowseOverlay
-          kind={panel}
           t={t}
           organ={organ}
-          groups={allSystemGroups}
           organs={organs}
-          empty={false}
           onSelect={selectOrgan}
           onPrefetch={prefetchOrgan}
           onClose={() => setPanel(null)}
@@ -461,21 +459,15 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
 }
 
 function BrowseOverlay({
-  kind, t, organ, groups, organs, empty, onSelect, onPrefetch, onClose,
+  t, organ, organs, onSelect, onPrefetch, onClose,
 }: {
-  kind: Exclude<Panel, null>;
   t: UiDictionary;
   organ: Organ;
-  groups: { system: string; organs: Organ[] }[];
   organs: Organ[];
-  empty: boolean;
   onSelect: (id: OrganId) => void;
   onPrefetch: (id: OrganId) => void;
   onClose: () => void;
 }) {
-  const title = kind === "systems" ? t.nav.systems : t.nav.library;
-  const lead = kind === "systems" ? t.browse.systemsLead : t.browse.libraryLead;
-
   return (
     <div className="modal-backdrop browse-backdrop" role="presentation" onMouseDown={onClose}>
       <section
@@ -487,50 +479,19 @@ function BrowseOverlay({
       >
         <button className="modal-close" onClick={onClose} aria-label={t.modal.close}><X size={18} /></button>
         <em>{t.modal.guided}</em>
-        <h2 id="browse-title">{title}</h2>
-        <p>{lead}</p>
-        {empty && <p className="search-empty">{t.search.empty}</p>}
-        {kind === "systems" ? groups.map((group) => {
-          const featured = group.organs.find((item) => item.id === organ.id);
-          return (
-            <section key={group.system} className="system-group">
-              <header>
-                <div>
-                  <h3>{group.system}</h3>
-                  {featured && <p>{featured.location}</p>}
-                </div>
-                {featured && (
-                  <span className="system-group-art">
-                    <OrganArt organ={featured} asset="location" alt="" />
-                  </span>
-                )}
-              </header>
-              <div className="catalog-grid">
-                {group.organs.map((item) => (
-                  <CatalogCard
-                    key={item.id}
-                    organ={item}
-                    active={item.id === organ.id}
-                    onSelect={onSelect}
-                    onPrefetch={onPrefetch}
-                  />
-                ))}
-              </div>
-            </section>
-          );
-        }) : (
-          <div className="catalog-grid">
-            {organs.map((item) => (
-              <CatalogCard
-                key={item.id}
-                organ={item}
-                active={item.id === organ.id}
-                onSelect={onSelect}
-                onPrefetch={onPrefetch}
-              />
-            ))}
-          </div>
-        )}
+        <h2 id="browse-title">{t.nav.library}</h2>
+        <p>{t.browse.libraryLead}</p>
+        <div className="catalog-grid">
+          {organs.map((item) => (
+            <CatalogCard
+              key={item.id}
+              organ={item}
+              active={item.id === organ.id}
+              onSelect={onSelect}
+              onPrefetch={onPrefetch}
+            />
+          ))}
+        </div>
       </section>
     </div>
   );
