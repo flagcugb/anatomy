@@ -2,12 +2,13 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
 import { disposeObject } from "./dispose";
+import { buildCardiovascularScene, proceduralKind } from "./cardiovascular";
 
 /** Edge length of the cube every organ is normalised into, so hotspot
  *  coordinates authored in `anatomy-data` mean the same thing for each model. */
 export const FIT_SIZE = 3.8;
 
-const CACHE_LIMIT = 9;
+const CACHE_LIMIT = 10;
 
 export type LoadedOrgan = {
   url: string;
@@ -116,6 +117,13 @@ export class AnatomyAssetManager {
   }
 
   private async parse(url: string, onProgress?: (progress: number) => void): Promise<LoadedOrgan> {
+    if (proceduralKind(url) === "cardiovascular") {
+      onProgress?.(0.25);
+      const built = await buildCardiovascularScene(this.loader);
+      onProgress?.(0.9);
+      return this.finish(url, built.model, built.meshes, null);
+    }
+
     const gltf = await this.loader.loadAsync(url, (event) => {
       if (event.total > 0) onProgress?.(Math.min(0.9, event.loaded / event.total));
     });
@@ -129,6 +137,26 @@ export class AnatomyAssetManager {
     model.scale.setScalar(scale);
     model.position.copy(center.multiplyScalar(-scale));
 
+    const meshes: THREE.Mesh[] = [];
+    model.traverse((child) => {
+      if (child instanceof THREE.Mesh) meshes.push(child);
+    });
+
+    let mixer: THREE.AnimationMixer | null = null;
+    if (gltf.animations.length) {
+      mixer = new THREE.AnimationMixer(model);
+      gltf.animations.forEach((clip) => mixer?.clipAction(clip).play());
+    }
+
+    return this.finish(url, model, meshes, mixer);
+  }
+
+  private finish(
+    url: string,
+    model: THREE.Object3D,
+    meshes: THREE.Mesh[],
+    mixer: THREE.AnimationMixer | null,
+  ): LoadedOrgan {
     // The pivot is what the viewer animates and what hotspots are parented to,
     // so hotspot coordinates stay in the normalised FIT_SIZE space.
     const pivot = new THREE.Group();
@@ -136,10 +164,7 @@ export class AnatomyAssetManager {
     pivot.add(model);
     pivot.rotation.set(0.05, -0.28, 0);
 
-    const meshes: THREE.Mesh[] = [];
-    model.traverse((child) => {
-      if (!(child instanceof THREE.Mesh)) return;
-      meshes.push(child);
+    meshes.forEach((child) => {
       // One mesh per organ, always centred in frame — culling can only ever
       // cost a wrong answer here, never save work.
       child.frustumCulled = false;
@@ -152,7 +177,8 @@ export class AnatomyAssetManager {
         material.opacity = 1;
         material.depthWrite = true;
         material.depthTest = true;
-        material.side = THREE.FrontSide;
+        // Vessel walls are thin tubes; FrontSide punches holes as the camera orbits.
+        material.side = url.includes("cardiovascular") ? THREE.DoubleSide : THREE.FrontSide;
         if (material instanceof THREE.MeshStandardMaterial) {
           // A tighter specular lobe sparkles on any surface with normal detail;
           // holding roughness a little higher keeps highlights stable while the
@@ -195,12 +221,6 @@ export class AnatomyAssetManager {
         material.needsUpdate = true;
       });
     });
-
-    let mixer: THREE.AnimationMixer | null = null;
-    if (gltf.animations.length) {
-      mixer = new THREE.AnimationMixer(model);
-      gltf.animations.forEach((clip) => mixer?.clipAction(clip).play());
-    }
 
     return { url, pivot, meshes, mixer };
   }

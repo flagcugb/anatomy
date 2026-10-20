@@ -69,6 +69,7 @@ export type UiDictionary = {
     resources: string; microscopic: string; compareOrgans: string; functionAnimation: string;
     clinicalNotes: string; whereItWorks: string; commonConditions: string;
     exploreTissue: string; openComparison: string; playAnimation: string; seeAll: string; seeSystem: string;
+    systemOrgans: string; seeOrgan: string; organAria: string;
     playAria: string; systemAria: string;
   };
   quiz: {

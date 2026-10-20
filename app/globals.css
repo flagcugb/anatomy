@@ -510,6 +510,15 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
 /* Sits directly under the header like every other card, rather than being
    pushed down by an auto top margin. */
 .system-visual { overflow: hidden; border-radius: 12px; }
+.system-members button {
+  all: unset;
+  cursor: pointer;
+  font: inherit;
+}
+.system-members button:hover,
+.system-members button:focus-visible {
+  color: #c45a4a;
+}
 
 .compare-strip { position: fixed; z-index: 20; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(820px, calc(100% - 28px)); padding: 13px 16px; display: grid; grid-template-columns: 1fr auto 1fr 1.5fr auto; align-items: center; gap: 14px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,251,245,.94); backdrop-filter: blur(18px); box-shadow: 0 22px 60px rgba(64,43,29,.2); }
 .compare-strip > div { display: flex; flex-direction: column; }

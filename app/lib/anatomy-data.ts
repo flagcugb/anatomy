@@ -5,6 +5,7 @@
 
 export type OrganId =
   | "heart"
+  | "cardiovascular"
   | "brain"
   | "lungs"
   | "liver"
@@ -13,6 +14,8 @@ export type OrganId =
   | "intestine"
   | "pancreas"
   | "skin";
+
+export type SpecimenKind = "organ" | "system";
 
 export type HotspotStructure = {
   id: string;
@@ -31,6 +34,12 @@ export type OrganStructure = {
   illustrated: boolean;
   /** Latin binomial — intentionally identical in every locale. */
   scientificName: string;
+  /** Defaults to `"organ"` when omitted. */
+  kind?: SpecimenKind;
+  /** System specimen this organ belongs to, when one exists. */
+  systemId?: OrganId;
+  /** Member organs of a system specimen. */
+  members?: OrganId[];
   hotspots: HotspotStructure[];
 };
 
@@ -42,6 +51,7 @@ export const organStructures: OrganStructure[] = [
     accent: "#ee7c6a",
     illustrated: true,
     scientificName: "Cor",
+    systemId: "cardiovascular",
     hotspots: [
       { id: "aorta", ta: "Aorta", position: [-0.35, 1.65, 0.55], color: "#ee7c6a" },
       { id: "left-atrium", ta: "Atrium sinistrum", position: [0.82, 0.65, 0.5], color: "#f2a33b" },
@@ -49,6 +59,24 @@ export const organStructures: OrganStructure[] = [
       { id: "left-ventricle", ta: "Ventriculus sinister", position: [0.7, -0.75, 0.65], color: "#f2a33b" },
       { id: "right-ventricle", ta: "Ventriculus dexter", position: [-0.65, -0.68, 0.66], color: "#ee7c6a" },
       { id: "mitral", ta: "Valva atrioventricularis sinistra", position: [0.18, -1.35, 0.48], color: "#d89bc4" },
+    ],
+  },
+  {
+    id: "cardiovascular",
+    kind: "system",
+    model: "procedural:cardiovascular",
+    icon: "♡",
+    accent: "#ee7c6a",
+    illustrated: false,
+    scientificName: "Systema cardiovasculare",
+    members: ["heart"],
+    hotspots: [
+      { id: "heart", ta: "Cor", position: [0.03, 0.2, 0.42], color: "#ee7c6a" },
+      { id: "aorta", ta: "Aorta", position: [-0.07, 0.86, 0.18], color: "#c45a4a" },
+      { id: "pulmonary-trunk", ta: "Truncus pulmonalis", position: [0.02, 0.65, 0.28], color: "#6b7eb0" },
+      { id: "superior-vena-cava", ta: "Vena cava superior", position: [-0.31, 0.72, 0.18], color: "#6393d8" },
+      { id: "carotid", ta: "Arteria carotis communis", position: [0.07, 1.53, 0.16], color: "#ee7c6a" },
+      { id: "iliac", ta: "Arteria iliaca communis", position: [0.07, -2.41, 0.12], color: "#c45a4a" },
     ],
   },
   {

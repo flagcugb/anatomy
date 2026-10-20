@@ -71,6 +71,7 @@ export const ui: UiDictionary = {
     clinicalNotes: "Notes cliniques", whereItWorks: "Où il agit", commonConditions: "Affections fréquentes",
     exploreTissue: "Explorer le tissu", openComparison: "Ouvrir la comparaison", playAnimation: "Lancer l'animation",
     seeAll: "Tout voir", seeSystem: "Voir le système",
+    systemOrgans: "Organes de ce système", seeOrgan: "Voir cet organe", organAria: "Voir le spécimen : {organ}",
     playAria: "Lancer l'animation fonctionnelle : {organ}", systemAria: "Voir où se situe {organ} dans le corps",
   },
   quiz: {

@@ -71,6 +71,7 @@ export const ui: UiDictionary = {
     clinicalNotes: "नैदानिक टिप्पणियाँ", whereItWorks: "कहाँ कार्य करता है", commonConditions: "सामान्य रोग",
     exploreTissue: "ऊतक देखें", openComparison: "तुलना खोलें", playAnimation: "एनिमेशन चलाएँ",
     seeAll: "सभी देखें", seeSystem: "तंत्र देखें",
+    systemOrgans: "इस तंत्र के अंग", seeOrgan: "यह अंग देखें", organAria: "{organ} का नमूना देखें",
     playAria: "{organ} का कार्य एनिमेशन चलाएँ", systemAria: "शरीर में {organ} की स्थिति देखें",
   },
   quiz: {

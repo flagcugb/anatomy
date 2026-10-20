@@ -70,6 +70,7 @@ export const ui: UiDictionary = {
     clinicalNotes: "Clinical notes", whereItWorks: "Where it works", commonConditions: "Common conditions",
     exploreTissue: "Explore tissue", openComparison: "Open comparison", playAnimation: "Play animation",
     seeAll: "See all", seeSystem: "See the system",
+    systemOrgans: "Organs in this system", seeOrgan: "View this organ", organAria: "View the {organ} specimen",
     playAria: "Play the {organ} function animation", systemAria: "See where the {organ} sits in the body",
   },
   quiz: {

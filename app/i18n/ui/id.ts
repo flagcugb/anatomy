@@ -71,6 +71,7 @@ export const ui: UiDictionary = {
     clinicalNotes: "Catatan klinis", whereItWorks: "Tempat bekerjanya", commonConditions: "Penyakit umum",
     exploreTissue: "Jelajahi jaringan", openComparison: "Buka perbandingan", playAnimation: "Putar animasi",
     seeAll: "Lihat semua", seeSystem: "Lihat sistemnya",
+    systemOrgans: "Organ dalam sistem ini", seeOrgan: "Lihat organ ini", organAria: "Lihat spesimen {organ}",
     playAria: "Putar animasi fungsi: {organ}", systemAria: "Lihat letak {organ} di dalam tubuh",
   },
   quiz: {
