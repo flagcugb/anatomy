@@ -236,6 +236,15 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     dockRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [lessonActive, quizActive, lessonEntry]);
 
+  useEffect(() => {
+    if (!systemOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSystemOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [systemOpen]);
+
   const startAnimation = () => {
     setPanel(null);
     setSystemOpen(false);
@@ -476,7 +485,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
       {systemOpen && (
         <div className="modal-backdrop" role="presentation" onMouseDown={() => setSystemOpen(false)}>
           <section
-            className="learning-modal wide"
+            className="learning-modal system-lightbox"
             role="dialog"
             aria-modal="true"
             aria-labelledby="system-title"
@@ -484,16 +493,10 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
           >
             <button className="modal-close" onClick={() => setSystemOpen(false)} aria-label={t.modal.close}><X size={18} /></button>
             <em>{t.cards.whereItWorks}</em>
-            <h2 id="system-title">{format(t.modal.bodyTitle, { organ: organ.name })}</h2>
-            <p>{format(t.modal.systemIntro, { location: organ.location, organ: organ.name })}</p>
+            <h2 id="system-title">{organ.system}</h2>
             <div className="modal-figure">
-              <OrganArt organ={organ} asset="location" alt={format(t.modal.bodyTitle, { organ: organ.name })} />
+              <OrganArt organ={organ} asset="location" alt={organ.system} />
             </div>
-            <dl className="modal-facts">
-              <div><dt>{t.modal.system}</dt><dd>{organ.system}</dd></div>
-              <div><dt>{t.modal.primaryRole}</dt><dd><Measure>{organ.function}</Measure></dd></div>
-              <div><dt>{t.modal.bloodSupply}</dt><dd><Measure>{organ.bloodSupply}</Measure></dd></div>
-            </dl>
           </section>
         </div>
       )}
