@@ -11,13 +11,17 @@ export const ui: UiDictionary = {
   },
   brand: { tagline: "تعلَّم التشريح كما يفعل الفنان", home: "الصفحة الرئيسية لـ Anatomy Atelier" },
   nav: { explore: "استكشاف", systems: "الأجهزة", lessons: "الدروس", library: "المكتبة", notes: "الملاحظات" },
-  search: { placeholder: "ابحث عن عضو أو موضوع…" },
+  search: { placeholder: "ابحث عن عضو أو موضوع…", empty: "لا يوجد عضو يطابق هذا البحث." },
   profile: { open: "فتح ملف المتعلّم" },
   language: { label: "اللغة", choose: "اختر لغة" },
   library: {
     title: "مكتبة الأعضاء", open: "فتح مكتبة الأعضاء", close: "إغلاق المكتبة",
     saved: "الأعضاء المحفوظة", viewAll: "عرض كل الأعضاء",
     quoteLine1: "التعلّم", quoteLine2: "فعلٌ من أفعال الفضول.", quoteSign: "واصل الاستكشاف!",
+  },
+  browse: {
+    systemsLead: "تصفّح العيّنات حسب الجهاز الذي تنتمي إليه.",
+    libraryLead: "كل الأعضاء الموجودة حالياً في المشغل.",
   },
   tools: {
     label: "أدوات العارض ثلاثي الأبعاد", rotate: "تدوير", zoom: "تكبير", isolate: "عزل",
@@ -40,6 +44,7 @@ export const ui: UiDictionary = {
   compare: {
     title: "مقارنة الأعضاء", comparing: "قيد المقارنة", reference: "مرجع",
     primaryRole: "الدور الأساسي", scale: "المقياس", vs: "مقابل", close: "إغلاق المقارنة",
+    pick: "تغيير", choose: "اختر عضواً للمقارنة",
   },
   cards: {
     resources: "مصادر تعلّم: {organ}",
@@ -55,6 +60,8 @@ export const ui: UiDictionary = {
     done: "انتهى الاختبار", score: "{score} من {total} صحيحة", retry: "حاول مرة أخرى",
     exit: "إنهاء الاختبار", hint: "انقر على النقطة المقابلة في النموذج",
   },
+  lesson: { next: "التالي", prev: "رجوع" },
+  animation: { playing: "راقب عمل {organ}", stop: "إيقاف الحركة" },
   modal: {
     guided: "اكتشاف موجَّه", close: "إغلاق", continueExploring: "واصل الاستكشاف",
     quizTitle: "اختبار سريع: {organ}", motionTitle: "{organ} في حركة",

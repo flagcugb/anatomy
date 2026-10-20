@@ -11,13 +11,17 @@ export const ui: UiDictionary = {
   },
   brand: { tagline: "Учить анатомию как художник", home: "Главная страница Anatomy Atelier" },
   nav: { explore: "Обзор", systems: "Системы", lessons: "Уроки", library: "Библиотека", notes: "Заметки" },
-  search: { placeholder: "Поиск органов и тем…" },
+  search: { placeholder: "Поиск органов и тем…", empty: "Нет органов, подходящих под этот запрос." },
   profile: { open: "Открыть профиль учащегося" },
   language: { label: "Язык", choose: "Выберите язык" },
   library: {
     title: "Библиотека органов", open: "Открыть библиотеку органов", close: "Закрыть библиотеку",
     saved: "Сохранённые органы", viewAll: "Показать все органы",
     quoteLine1: "Учение —", quoteLine2: "это акт любопытства.", quoteSign: "Продолжайте исследовать!",
+  },
+  browse: {
+    systemsLead: "Просматривайте препараты по системам, к которым они относятся.",
+    libraryLead: "Все органы, которые сейчас есть в ателье.",
   },
   tools: {
     label: "Инструменты 3D-просмотра", rotate: "Вращать", zoom: "Масштаб", isolate: "Изолировать",
@@ -40,6 +44,7 @@ export const ui: UiDictionary = {
   compare: {
     title: "Сравнение органов", comparing: "Сравнение", reference: "Эталон",
     primaryRole: "Основная роль", scale: "Масштаб", vs: "и", close: "Закрыть сравнение",
+    pick: "Сменить", choose: "Выберите орган для сравнения",
   },
   cards: {
     resources: "Учебные материалы: {organ}",
@@ -55,6 +60,8 @@ export const ui: UiDictionary = {
     done: "Тест завершён", score: "{score} из {total} верно", retry: "Пройти снова",
     exit: "Выйти из теста", hint: "Нажмите на соответствующую точку на модели",
   },
+  lesson: { next: "Далее", prev: "Назад" },
+  animation: { playing: "Как работает этот орган ({organ})", stop: "Остановить анимацию" },
   modal: {
     guided: "Направленное открытие", close: "Закрыть", continueExploring: "Продолжить изучение",
     quizTitle: "Быстрый тест: {organ}", motionTitle: "{organ} в движении",

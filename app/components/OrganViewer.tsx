@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import {
   Box,
+  ChevronLeft,
+  ChevronRight,
   CircleDashed,
   Layers3,
   Maximize2,
@@ -14,6 +16,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import type { OrganId } from "../lib/anatomy-data";
 import type { Hotspot, Organ } from "../i18n/merge";
 import { format, type UiDictionary } from "../i18n/types";
 import type { AnatomyViewer } from "../lib/three/viewer";
@@ -28,7 +31,17 @@ type Props = {
   onCompare: () => void;
   quizActive: boolean;
   onQuizExit: () => void;
+  lessonActive: boolean;
+  onLessonExit: () => void;
+  animating: boolean;
+  onAnimateStop: () => void;
 };
+
+function motionFor(id: OrganId): "pulse" | "breathe" | "wave" {
+  if (id === "heart") return "pulse";
+  if (id === "lungs") return "breathe";
+  return "wave";
+}
 
 /** Fisher–Yates. The quiz asks for every structure once, in a fresh order. */
 function shuffle<T>(items: T[]): T[] {
@@ -41,6 +54,89 @@ function shuffle<T>(items: T[]): T[] {
 }
 
 type PickRef = { current: (hotspot: Hotspot) => void };
+
+type LessonStep =
+  | { type: "overview" }
+  | { type: "facts" }
+  | { type: "structure"; hotspot: Hotspot }
+  | { type: "function" }
+  | { type: "clinical" };
+
+function buildLesson(organ: Organ): LessonStep[] {
+  return [
+    { type: "overview" },
+    { type: "facts" },
+    ...organ.hotspots.map((hotspot) => ({ type: "structure" as const, hotspot })),
+    { type: "function" },
+    { type: "clinical" },
+  ];
+}
+
+function LessonTour({
+  organ, t, onFocus, onExit,
+}: {
+  organ: Organ;
+  t: UiDictionary;
+  onFocus: (id: string | null) => void;
+  onExit: () => void;
+}) {
+  const steps = useMemo(() => buildLesson(organ), [organ]);
+  const [index, setIndex] = useState(0);
+  const step = steps[index];
+  const last = index >= steps.length - 1;
+
+  useEffect(() => {
+    onFocus(step.type === "structure" ? step.hotspot.id : null);
+  }, [step, onFocus]);
+
+  useEffect(() => () => onFocus(null), [onFocus]);
+
+  const kicker =
+    step.type === "overview" ? t.modal.guided
+    : step.type === "facts" ? t.info.keyFacts
+    : step.type === "structure" ? t.quiz.find
+    : step.type === "function" ? t.info.function
+    : t.cards.clinicalNotes;
+
+  const title =
+    step.type === "overview" ? organ.name
+    : step.type === "facts" ? organ.poetic
+    : step.type === "structure" ? step.hotspot.label
+    : step.type === "function" ? organ.function
+    : t.cards.commonConditions;
+
+  return (
+    <div className="quiz-bar lesson-bar" role="status" aria-live="polite">
+      <div className="quiz-prompt">
+        <em>{kicker}</em>
+        <strong>{title}</strong>
+        {step.type === "overview" && <span>{organ.description}</span>}
+        {step.type === "facts" && (
+          <span>{organ.size} · {organ.weight} · {organ.location} · {organ.dailyFact}</span>
+        )}
+        {step.type === "structure" && <span>{step.hotspot.detail}</span>}
+        {step.type === "function" && <span>{organ.medical} {organ.funFact}</span>}
+        {step.type === "clinical" && <span>{organ.conditions.join(" · ")}</span>}
+      </div>
+      <div className="quiz-meta">
+        <span className="quiz-progress">{format(t.quiz.progress, { current: String(index + 1), total: String(steps.length) })}</span>
+        <div className="lesson-nav">
+          <button type="button" onClick={() => setIndex((value) => Math.max(0, value - 1))} disabled={index === 0} aria-label={t.lesson.prev}>
+            <ChevronLeft size={16} />
+          </button>
+          {last ? (
+            <button type="button" className="lesson-done" onClick={onExit}>{t.modal.continueExploring}</button>
+          ) : (
+            <button type="button" onClick={() => setIndex((value) => value + 1)} aria-label={t.lesson.next}>
+              <ChevronRight size={16} />
+            </button>
+          )}
+        </div>
+      </div>
+      <button type="button" onClick={onExit} aria-label={t.modal.close}><X size={16} /></button>
+    </div>
+  );
+}
 
 /**
  * The labelling quiz. Owns its own round state and is mounted with a `key` per
@@ -163,7 +259,10 @@ function useAuthoringFlag() {
   );
 }
 
-export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCompare, quizActive, onQuizExit }: Props) {
+export function OrganViewer({
+  organ, t, autoRotate, onAutoRotate, compare, onCompare,
+  quizActive, onQuizExit, lessonActive, onLessonExit, animating, onAnimateStop,
+}: Props) {
   const mountRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<AnatomyViewer | null>(null);
   const organRef = useRef(organ);
@@ -255,10 +354,26 @@ export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCom
   }, [organ]);
 
   // A spinning specimen makes "click the mitral valve" a game of chance, so the
-  // quiz holds the model still and restores the user's setting on exit.
-  useEffect(() => viewerRef.current?.setAutoRotate(autoRotate && !quizActive), [autoRotate, quizActive]);
+  // quiz and the lesson hold the model still and restore the user's setting on exit.
+  useEffect(
+    () => viewerRef.current?.setAutoRotate(autoRotate && !quizActive && !lessonActive),
+    [autoRotate, quizActive, lessonActive],
+  );
   useEffect(() => viewerRef.current?.setQuizMode(quizActive), [quizActive]);
   useEffect(() => viewerRef.current?.setAuthoring(authoring), [authoring]);
+  useEffect(() => {
+    setActiveTool(null);
+  }, [organ.id]);
+  useEffect(() => {
+    const viewer = viewerRef.current;
+    if (!viewer) return;
+    if (animating) viewer.playFunction(motionFor(organ.id), organ.hotspots.map((hotspot) => hotspot.id));
+    else viewer.stopFunction();
+  }, [animating, organ]);
+
+  const focusHotspot = useCallback((id: string | null) => {
+    viewerRef.current?.focusHotspot(id);
+  }, []);
 
 
   // The viewer drives the callout's position directly, so a spinning model
@@ -271,7 +386,7 @@ export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCom
     const viewer = viewerRef.current;
     if (!viewer) return;
     if (tool === "rotate") onAutoRotate(!autoRotate);
-    if (tool === "zoom") viewer.zoom(-1);
+    if (tool === "zoom") setActiveTool(viewer.toggleZoom() ? tool : null);
     if (tool === "isolate") setActiveTool(viewer.toggleIsolate() ? tool : null);
     if (tool === "section") setActiveTool(viewer.toggleCrossSection() ? tool : null);
     if (tool === "layers") setActiveTool(viewer.toggleLayers() ? tool : null);
@@ -279,6 +394,7 @@ export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCom
     if (tool === "reset") {
       viewer.reset();
       setActiveTool(null);
+      if (animating) onAnimateStop();
     }
   };
 
@@ -313,7 +429,7 @@ export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCom
         ))}
       </div>
 
-      {!quizActive && (
+      {!quizActive && !lessonActive && !animating && (
       <aside className="tip-note" aria-label={t.viewer.tip}>
         <span><Sparkles size={15} /> {t.viewer.tip}</span>
         <p>{t.viewer.tipDrag}<br />{t.viewer.tipScroll}<br />{t.viewer.tipClick}</p>
@@ -351,6 +467,21 @@ export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCom
         />
       )}
 
+      {lessonActive && (
+        <LessonTour key={organ.id} organ={organ} t={t} onFocus={focusHotspot} onExit={onLessonExit} />
+      )}
+
+      {animating && (
+        <div className="quiz-bar animation-bar" role="status">
+          <div className="quiz-prompt">
+            <em>{t.cards.functionAnimation}</em>
+            <strong>{format(t.animation.playing, { organ: organ.name })}</strong>
+            <span>{organ.function}</span>
+          </div>
+          <button type="button" onClick={onAnimateStop}>{t.animation.stop}</button>
+        </div>
+      )}
+
       {authoring && (
         <div className="authoring-panel">
           <span><Crosshair size={13} /> authoring</span>
@@ -382,7 +513,7 @@ export function OrganViewer({ organ, t, autoRotate, onAutoRotate, compare, onCom
         </div>
       )}
 
-      {!quizActive && (
+      {!quizActive && !lessonActive && (
       <button className="auto-rotate" type="button" onClick={() => onAutoRotate(!autoRotate)} aria-pressed={autoRotate}>
         <RotateCcw size={14} /> {t.viewer.autoRotate}
         <span className={`switch ${autoRotate ? "on" : ""}`}><i /></span>

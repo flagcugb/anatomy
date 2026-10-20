@@ -46,6 +46,11 @@ export class AnatomyViewer {
   private depthMaterial = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: true, depthTest: true });
   private crossSection = false;
   private isolated = false;
+  /** 0 solid, 1 x-ray, 2 wireframe. */
+  private layerMode: 0 | 1 | 2 = 0;
+  private functionTween: gsap.core.Timeline | null = null;
+  private functionTour: gsap.core.Timeline | null = null;
+  private functionPlaying = false;
 
   private width = 1;
   private height = 1;
@@ -246,6 +251,8 @@ export class AnatomyViewer {
 
   async setOrgan(modelUrl: string, hotspots: Hotspot[], accent: string) {
     const request = ++this.loadRequest;
+    this.stopFunction();
+    this.clearTools();
     this.select(null);
     this.callbacks.onLoading(true, 0);
 
@@ -291,7 +298,6 @@ export class AnatomyViewer {
     // Anchor the dots while the organ is still invisible, then play the intro.
     this.hotspots.attach(organ.pivot, hotspots, organ.meshes);
     this.hotspots.setPixelSize(DOT_PIXELS, this.height, CAMERA_FOV);
-    if (this.crossSection) this.applyClipping(true);
 
     const glow = this.scene.getObjectByName("organ-glow") as THREE.PointLight | undefined;
     glow?.color.set(accent);
@@ -392,7 +398,7 @@ export class AnatomyViewer {
 
     this.applyAutoRotate(now);
     if (this.controls.update(delta)) this.dirty = true;
-    if (this.assets.hasAnimation) {
+    if (this.assets.hasAnimation || this.functionPlaying) {
       this.assets.update(delta);
       this.dirty = true;
     }
@@ -553,12 +559,18 @@ export class AnatomyViewer {
     if (this.selectedId === id) return;
     this.selectedId = id;
     this.busy(0.4);
+    if (this.isolated) this.applyPresentation();
     const marker = this.hotspots.list.find((item) => item.hotspot.id === id);
     this.callbacks.onSelect(marker?.hotspot ?? null);
   }
 
   clearSelection() {
     this.select(null);
+  }
+
+  /** Used by the guided lesson to pin a structure on the specimen. */
+  focusHotspot(id: string | null) {
+    this.select(id);
   }
 
   /** The callout is positioned imperatively so tracking a spinning model never
@@ -601,26 +613,28 @@ export class AnatomyViewer {
   }
 
   reset() {
+    this.stopFunction();
+    this.clearTools();
     this.select(null);
     this.tween(this.camera.position, { ...HOME_CAMERA, duration: 0.8, ease: "power3.out" });
     this.tween(this.controls.target, { ...HOME_TARGET, duration: 0.8, ease: "power3.out" });
     if (this.organ) this.tween(this.organ.pivot.rotation, { x: 0.05, y: -0.28, z: 0, duration: 0.8, ease: "power3.out" });
   }
 
-  zoom(direction: 1 | -1) {
+  /** Pulls in close, or returns to the home framing if already there. */
+  toggleZoom() {
+    const close = this.camera.position.z <= 6.2;
     this.tween(this.camera.position, {
-      z: THREE.MathUtils.clamp(this.camera.position.z + direction * 1.2, 4.8, 12),
+      z: close ? HOME_CAMERA.z : 5.4,
       duration: 0.5,
       ease: "power2.out",
     });
+    return !close;
   }
 
   toggleIsolate() {
     this.isolated = !this.isolated;
-    const plinth = this.plinth.material as THREE.MeshStandardMaterial;
-    plinth.transparent = true;
-    this.tween(plinth, { opacity: this.isolated ? 0.15 : 1, duration: 0.45 });
-    this.tween(this.contactShadow.material, { opacity: this.isolated ? 0.08 : 0.55, duration: 0.45 });
+    this.applyPresentation();
     return this.isolated;
   }
 
@@ -651,22 +665,99 @@ export class AnatomyViewer {
     this.dirty = true;
   }
 
+  /** Cycles solid → x-ray → wireframe → solid. */
   toggleLayers() {
-    if (!this.organ) return false;
-    let enabled = false;
-    this.materials(this.organ).forEach((material) => {
-      if (material instanceof THREE.MeshStandardMaterial) {
-        material.wireframe = !material.wireframe;
-        enabled = material.wireframe;
-      }
-    });
+    this.layerMode = ((this.layerMode + 1) % 3) as 0 | 1 | 2;
+    this.applyPresentation();
+    return this.layerMode !== 0;
+  }
+
+  playFunction(kind: "pulse" | "breathe" | "wave", hotspotIds: string[]) {
+    this.stopFunction();
+    if (!this.organ) return;
+    this.functionPlaying = true;
+    const scale = this.organ.pivot.scale;
+    const tl = gsap.timeline({ repeat: -1, onUpdate: () => (this.dirty = true) });
+    if (kind === "pulse") {
+      tl.to(scale, { x: 1.09, y: 1.09, z: 1.09, duration: 0.16, ease: "power1.out" })
+        .to(scale, { x: 1, y: 1, z: 1, duration: 0.26, ease: "power1.in" })
+        .to(scale, { x: 1.05, y: 1.05, z: 1.05, duration: 0.12, ease: "power1.out" })
+        .to(scale, { x: 1, y: 1, z: 1, duration: 0.38, ease: "power1.in" })
+        .to({}, { duration: 0.5 });
+    } else if (kind === "breathe") {
+      tl.to(scale, { x: 1.07, y: 1.14, z: 1.07, duration: 1.55, ease: "sine.inOut" })
+        .to(scale, { x: 1, y: 1, z: 1, duration: 1.75, ease: "sine.inOut" });
+    } else {
+      tl.to(scale, { x: 1.045, y: 1.045, z: 1.045, duration: 0.9, ease: "sine.inOut" })
+        .to(scale, { x: 1, y: 1, z: 1, duration: 0.9, ease: "sine.inOut" });
+    }
+    this.functionTween = tl;
+    if (hotspotIds.length) {
+      const tour = gsap.timeline({ repeat: -1 });
+      hotspotIds.forEach((id, index) => {
+        tour.call(() => { if (this.functionPlaying) this.select(id); }, [], index * 2.6);
+      });
+      tour.to({}, { duration: 2.6 }, hotspotIds.length * 2.6);
+      this.functionTour = tour;
+    }
     this.dirty = true;
-    return enabled;
+  }
+
+  stopFunction() {
+    this.functionPlaying = false;
+    this.functionTween?.kill();
+    this.functionTween = null;
+    this.functionTour?.kill();
+    this.functionTour = null;
+    if (this.organ) {
+      gsap.killTweensOf(this.organ.pivot.scale);
+      this.organ.pivot.scale.setScalar(1);
+    }
+    this.dirty = true;
+  }
+
+  private clearTools() {
+    this.isolated = false;
+    this.layerMode = 0;
+    if (this.crossSection) {
+      this.crossSection = false;
+      this.applyClipping(false);
+    }
+    this.applyPresentation();
+  }
+
+  /**
+   * Isolate dims the plinth and keeps one structure's marker; layers walk
+   * solid / x-ray / wireframe. Combined so the two tools do not fight.
+   */
+  private applyPresentation() {
+    const plinth = this.plinth.material as THREE.MeshStandardMaterial;
+    plinth.transparent = true;
+    this.tween(plinth, { opacity: this.isolated ? 0.15 : 1, duration: 0.45 });
+    this.tween(this.contactShadow.material, { opacity: this.isolated ? 0.08 : 0.55, duration: 0.45 });
+    this.hotspots.setFocus(this.isolated ? this.selectedId : null);
+
+    if (!this.organ) {
+      this.dirty = true;
+      return;
+    }
+    const xray = this.layerMode === 1 || (this.isolated && Boolean(this.selectedId));
+    const wire = this.layerMode === 2;
+    this.materials(this.organ).forEach((material) => {
+      material.transparent = xray;
+      material.opacity = xray ? 0.4 : 1;
+      material.depthWrite = true;
+      if (material instanceof THREE.MeshStandardMaterial) material.wireframe = wire;
+      material.needsUpdate = true;
+    });
+    this.setDepthPrepass(this.organ, xray);
+    this.dirty = true;
   }
 
   dispose() {
     this.disposed = true;
     this.loadRequest += 1;
+    this.stopFunction();
     cancelAnimationFrame(this.frame);
     gsap.killTweensOf(this.camera.position);
     this.controls.removeEventListener("start", this.onControlStart);

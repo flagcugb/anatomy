@@ -11,13 +11,17 @@ export const ui: UiDictionary = {
   },
   brand: { tagline: "像艺术家一样学解剖", home: "Anatomy Atelier 首页" },
   nav: { explore: "探索", systems: "系统", lessons: "课程", library: "资料库", notes: "笔记" },
-  search: { placeholder: "搜索器官或主题…" },
+  search: { placeholder: "搜索器官或主题…", empty: "没有匹配的器官。" },
   profile: { open: "打开学习者档案" },
   language: { label: "语言", choose: "选择语言" },
   library: {
     title: "器官库", open: "打开器官库", close: "关闭器官库",
     saved: "已收藏的器官", viewAll: "查看全部器官",
     quoteLine1: "学习", quoteLine2: "是一种好奇心。", quoteSign: "继续探索吧！",
+  },
+  browse: {
+    systemsLead: "按所属系统浏览标本。",
+    libraryLead: "工作室中目前收录的全部器官。",
   },
   tools: {
     label: "3D 查看器工具", rotate: "旋转", zoom: "缩放", isolate: "单独显示",
@@ -40,6 +44,7 @@ export const ui: UiDictionary = {
   compare: {
     title: "器官对比", comparing: "正在对比", reference: "参照",
     primaryRole: "主要作用", scale: "尺度", vs: "对比", close: "关闭对比",
+    pick: "更换", choose: "选择对照器官",
   },
   cards: {
     resources: "{organ}学习资源",
@@ -55,6 +60,8 @@ export const ui: UiDictionary = {
     done: "测验结束", score: "答对 {score} / {total}", retry: "再试一次",
     exit: "退出测验", hint: "在模型上点击对应的圆点",
   },
+  lesson: { next: "下一步", prev: "上一步" },
+  animation: { playing: "正在观察{organ}如何工作", stop: "停止动画" },
   modal: {
     guided: "引导式探索", close: "关闭", continueExploring: "继续探索",
     quizTitle: "{organ}快速测验", motionTitle: "运动中的{organ}",

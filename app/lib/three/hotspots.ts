@@ -108,6 +108,8 @@ export class HotspotLayer {
   /** Quiz answer feedback. Holds more than one dot so a wrong answer can mark
    *  the miss in red *and* the real answer in green at the same time. */
   private flashes = new Map<string, { correct: boolean; until: number }>();
+  /** When set, every other marker fades away so one structure can be studied. */
+  private focusId: string | null = null;
 
   private readonly world = new THREE.Vector3();
   private readonly toCamera = new THREE.Vector3();
@@ -182,6 +184,10 @@ export class HotspotLayer {
     this.flashes.clear();
   }
 
+  setFocus(id: string | null) {
+    this.focusId = id;
+  }
+
   /** Keeps dots at a constant on-screen size regardless of zoom or viewport. */
   setPixelSize(pixels: number, viewportHeight: number, fovDegrees: number) {
     const fov = THREE.MathUtils.degToRad(fovDegrees);
@@ -232,7 +238,8 @@ export class HotspotLayer {
       const radius = this.outward.length();
       this.toCamera.copy(camera.position).sub(this.world).normalize();
       const facing = radius > 1e-4 ? this.outward.divideScalar(radius).dot(this.toCamera) : 1;
-      const target = THREE.MathUtils.smoothstep(facing, -0.05, 0.3);
+      const hidden = this.focusId !== null && marker.hotspot.id !== this.focusId;
+      const target = hidden ? 0 : THREE.MathUtils.smoothstep(facing, -0.05, 0.3);
 
       const active = marker.hotspot.id === selectedId || marker.hotspot.id === hoveredId;
       const emphasisTarget = active ? 1 : 0;
@@ -314,6 +321,7 @@ export class HotspotLayer {
       marker.pulse.material.dispose();
     });
     this.markers = [];
+    this.focusId = null;
     this.group.clear();
     this.group.removeFromParent();
   }

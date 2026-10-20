@@ -11,13 +11,17 @@ export const ui: UiDictionary = {
   },
   brand: { tagline: "Aprende anatomía como un artista", home: "Inicio de Anatomy Atelier" },
   nav: { explore: "Explorar", systems: "Sistemas", lessons: "Lecciones", library: "Biblioteca", notes: "Notas" },
-  search: { placeholder: "Buscar órganos, temas…" },
+  search: { placeholder: "Buscar órganos, temas…", empty: "Ningún órgano coincide con esa búsqueda." },
   profile: { open: "Abrir perfil del estudiante" },
   language: { label: "Idioma", choose: "Elige un idioma" },
   library: {
     title: "Biblioteca de órganos", open: "Abrir biblioteca de órganos", close: "Cerrar biblioteca",
     saved: "Órganos guardados", viewAll: "Ver todos los órganos",
     quoteLine1: "Aprender es", quoteLine2: "un acto de curiosidad.", quoteSign: "¡Sigue explorando!",
+  },
+  browse: {
+    systemsLead: "Explora los especímenes según el sistema al que pertenecen.",
+    libraryLead: "Todos los órganos que hay ahora en el atelier.",
   },
   tools: {
     label: "Herramientas del visor 3D", rotate: "Girar", zoom: "Zoom", isolate: "Aislar",
@@ -40,6 +44,7 @@ export const ui: UiDictionary = {
   compare: {
     title: "Comparación de órganos", comparing: "Comparando", reference: "Referencia",
     primaryRole: "Función principal", scale: "Escala", vs: "vs.", close: "Cerrar comparación",
+    pick: "Cambiar", choose: "Elige un órgano de referencia",
   },
   cards: {
     resources: "Recursos de aprendizaje: {organ}",
@@ -55,6 +60,8 @@ export const ui: UiDictionary = {
     done: "Cuestionario terminado", score: "{score} de {total} aciertos", retry: "Intentar de nuevo",
     exit: "Salir del cuestionario", hint: "Haz clic en el punto correspondiente del modelo",
   },
+  lesson: { next: "Siguiente", prev: "Atrás" },
+  animation: { playing: "Observando cómo trabaja el {organ}", stop: "Detener animación" },
   modal: {
     guided: "Descubrimiento guiado", close: "Cerrar", continueExploring: "Seguir explorando",
     quizTitle: "Cuestionario rápido: {organ}", motionTitle: "{organ} en movimiento",

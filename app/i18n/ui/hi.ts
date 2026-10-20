@@ -11,13 +11,17 @@ export const ui: UiDictionary = {
   },
   brand: { tagline: "शरीर रचना, एक कलाकार की तरह", home: "Anatomy Atelier मुखपृष्ठ" },
   nav: { explore: "अन्वेषण", systems: "तंत्र", lessons: "पाठ", library: "संग्रह", notes: "टिप्पणियाँ" },
-  search: { placeholder: "अंग या विषय खोजें…" },
+  search: { placeholder: "अंग या विषय खोजें…", empty: "इस खोज से कोई अंग नहीं मिला।" },
   profile: { open: "शिक्षार्थी प्रोफ़ाइल खोलें" },
   language: { label: "भाषा", choose: "भाषा चुनें" },
   library: {
     title: "अंग संग्रह", open: "अंग संग्रह खोलें", close: "संग्रह बंद करें",
     saved: "सहेजे गए अंग", viewAll: "सभी अंग देखें",
     quoteLine1: "सीखना", quoteLine2: "जिज्ञासा का कार्य है।", quoteSign: "खोजते रहिए!",
+  },
+  browse: {
+    systemsLead: "अंगों को उनके तंत्र के अनुसार देखें।",
+    libraryLead: "अटेलियर में अभी उपलब्ध सभी अंग।",
   },
   tools: {
     label: "3D दर्शक उपकरण", rotate: "घुमाएँ", zoom: "ज़ूम", isolate: "अलग करें",
@@ -40,6 +44,7 @@ export const ui: UiDictionary = {
   compare: {
     title: "अंगों की तुलना", comparing: "तुलना", reference: "संदर्भ",
     primaryRole: "मुख्य भूमिका", scale: "मात्रा", vs: "बनाम", close: "तुलना बंद करें",
+    pick: "बदलें", choose: "तुलना के लिए अंग चुनें",
   },
   cards: {
     resources: "{organ} — अध्ययन सामग्री",
@@ -55,6 +60,8 @@ export const ui: UiDictionary = {
     done: "प्रश्नोत्तरी पूर्ण", score: "{total} में से {score} सही", retry: "फिर से प्रयास करें",
     exit: "प्रश्नोत्तरी छोड़ें", hint: "मॉडल पर संबंधित बिंदु क्लिक करें",
   },
+  lesson: { next: "आगे", prev: "पीछे" },
+  animation: { playing: "{organ} कैसे काम करता है, देखें", stop: "एनिमेशन रोकें" },
   modal: {
     guided: "निर्देशित खोज", close: "बंद करें", continueExploring: "खोज जारी रखें",
     quizTitle: "{organ} — त्वरित प्रश्नोत्तरी", motionTitle: "{organ} गति में",

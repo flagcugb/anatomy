@@ -11,13 +11,17 @@ export const ui: UiDictionary = {
   },
   brand: { tagline: "芸術家のように解剖学を学ぶ", home: "Anatomy Atelier ホーム" },
   nav: { explore: "探索", systems: "系統", lessons: "レッスン", library: "ライブラリ", notes: "ノート" },
-  search: { placeholder: "臓器やトピックを検索…" },
+  search: { placeholder: "臓器やトピックを検索…", empty: "一致する臓器はありません。" },
   profile: { open: "学習者プロフィールを開く" },
   language: { label: "言語", choose: "言語を選択" },
   library: {
     title: "臓器ライブラリ", open: "臓器ライブラリを開く", close: "ライブラリを閉じる",
     saved: "保存した臓器", viewAll: "すべての臓器を見る",
     quoteLine1: "学びとは", quoteLine2: "好奇心のいとなみ。", quoteSign: "探索を続けよう！",
+  },
+  browse: {
+    systemsLead: "所属する系統ごとに標本を見る。",
+    libraryLead: "アトリエに収録されているすべての臓器。",
   },
   tools: {
     label: "3D ビューアのツール", rotate: "回転", zoom: "ズーム", isolate: "単独表示",
@@ -40,6 +44,7 @@ export const ui: UiDictionary = {
   compare: {
     title: "臓器の比較", comparing: "比較中", reference: "基準",
     primaryRole: "おもな役割", scale: "スケール", vs: "対", close: "比較を閉じる",
+    pick: "変更", choose: "比較する臓器を選ぶ",
   },
   cards: {
     resources: "{organ}の学習リソース",
@@ -55,6 +60,8 @@ export const ui: UiDictionary = {
     done: "クイズ終了", score: "{total} 問中 {score} 問正解", retry: "もう一度",
     exit: "クイズを終える", hint: "モデル上の該当する点をクリック",
   },
+  lesson: { next: "次へ", prev: "戻る" },
+  animation: { playing: "{organ}の働きを見る", stop: "アニメーションを止める" },
   modal: {
     guided: "ガイド付きの発見", close: "閉じる", continueExploring: "探索を続ける",
     quizTitle: "{organ}のミニクイズ", motionTitle: "動く{organ}",

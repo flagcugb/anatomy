@@ -11,13 +11,17 @@ export const ui: UiDictionary = {
   },
   brand: { tagline: "Apprendre l'anatomie comme un artiste", home: "Accueil d'Anatomy Atelier" },
   nav: { explore: "Explorer", systems: "Systèmes", lessons: "Leçons", library: "Bibliothèque", notes: "Notes" },
-  search: { placeholder: "Rechercher un organe, un thème…" },
+  search: { placeholder: "Rechercher un organe, un thème…", empty: "Aucun organe ne correspond à cette recherche." },
   profile: { open: "Ouvrir le profil de l'apprenant" },
   language: { label: "Langue", choose: "Choisir une langue" },
   library: {
     title: "Bibliothèque d'organes", open: "Ouvrir la bibliothèque d'organes", close: "Fermer la bibliothèque",
     saved: "Organes enregistrés", viewAll: "Voir tous les organes",
     quoteLine1: "Apprendre est", quoteLine2: "un acte de curiosité.", quoteSign: "Continuez à explorer !",
+  },
+  browse: {
+    systemsLead: "Parcourez les spécimens selon le système auquel ils appartiennent.",
+    libraryLead: "Tous les organes actuellement dans l'atelier.",
   },
   tools: {
     label: "Outils de la visionneuse 3D", rotate: "Pivoter", zoom: "Zoom", isolate: "Isoler",
@@ -40,6 +44,7 @@ export const ui: UiDictionary = {
   compare: {
     title: "Comparaison d'organes", comparing: "Comparaison", reference: "Référence",
     primaryRole: "Rôle principal", scale: "Échelle", vs: "vs", close: "Fermer la comparaison",
+    pick: "Changer", choose: "Choisir un organe de référence",
   },
   cards: {
     resources: "Ressources d'apprentissage : {organ}",
@@ -55,6 +60,8 @@ export const ui: UiDictionary = {
     done: "Quiz terminé", score: "{score} bonnes réponses sur {total}", retry: "Réessayer",
     exit: "Quitter le quiz", hint: "Cliquez sur le point correspondant du modèle",
   },
+  lesson: { next: "Suivant", prev: "Retour" },
+  animation: { playing: "Le {organ} au travail", stop: "Arrêter l'animation" },
   modal: {
     guided: "Découverte guidée", close: "Fermer", continueExploring: "Continuer l'exploration",
     quizTitle: "Quiz express : {organ}", motionTitle: "{organ} en mouvement",

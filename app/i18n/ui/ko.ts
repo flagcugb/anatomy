@@ -11,13 +11,17 @@ export const ui: UiDictionary = {
   },
   brand: { tagline: "예술가처럼 배우는 해부학", home: "Anatomy Atelier 홈" },
   nav: { explore: "탐색", systems: "계통", lessons: "수업", library: "라이브러리", notes: "노트" },
-  search: { placeholder: "장기나 주제 검색…" },
+  search: { placeholder: "장기나 주제 검색…", empty: "검색과 일치하는 장기가 없습니다." },
   profile: { open: "학습자 프로필 열기" },
   language: { label: "언어", choose: "언어 선택" },
   library: {
     title: "장기 라이브러리", open: "장기 라이브러리 열기", close: "라이브러리 닫기",
     saved: "저장한 장기", viewAll: "모든 장기 보기",
     quoteLine1: "배움은", quoteLine2: "호기심의 행위입니다.", quoteSign: "계속 탐색해 보세요!",
+  },
+  browse: {
+    systemsLead: "장기가 속한 계통별로 표본을 살펴보세요.",
+    libraryLead: "아틀리에에 현재 수록된 모든 장기.",
   },
   tools: {
     label: "3D 뷰어 도구", rotate: "회전", zoom: "확대", isolate: "단독 보기",
@@ -40,6 +44,7 @@ export const ui: UiDictionary = {
   compare: {
     title: "장기 비교", comparing: "비교 중", reference: "기준",
     primaryRole: "주요 역할", scale: "규모", vs: "대", close: "비교 닫기",
+    pick: "바꾸기", choose: "비교할 장기 선택",
   },
   cards: {
     resources: "{organ} 학습 자료",
@@ -55,6 +60,8 @@ export const ui: UiDictionary = {
     done: "퀴즈 완료", score: "{total}문제 중 {score}문제 정답", retry: "다시 풀기",
     exit: "퀴즈 끝내기", hint: "모델에서 해당하는 점을 클릭하세요",
   },
+  lesson: { next: "다음", prev: "이전" },
+  animation: { playing: "{organ}이(가) 일하는 모습", stop: "애니메이션 중지" },
   modal: {
     guided: "안내 탐색", close: "닫기", continueExploring: "계속 탐색하기",
     quizTitle: "{organ} 빠른 퀴즈", motionTitle: "움직이는 {organ}",

@@ -43,7 +43,7 @@ button:focus-visible, input:focus-visible, canvas:focus-visible {
 .topbar {
   height: 68px;
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) auto minmax(200px, 1fr) auto auto;
+  grid-template-columns: minmax(260px, 1fr) auto minmax(200px, 1fr) auto;
   align-items: center;
   gap: 18px;
   max-width: 1720px;
@@ -167,7 +167,7 @@ button:focus-visible, input:focus-visible, canvas:focus-visible {
   text-align: start;
   min-height: 70px;
   display: grid;
-  grid-template-columns: 54px 1fr 18px;
+  grid-template-columns: 54px 1fr;
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
@@ -190,7 +190,12 @@ button:focus-visible, input:focus-visible, canvas:focus-visible {
 .organ-glyph img { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; transform: scale(1.14); }
 .organ-item b { display: block; font: 500 17px/1.1 var(--font-serif), serif; }
 .organ-item small { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; }
-.organ-item .favorite { color: #ef8d7d; }
+.search-empty {
+  margin: 18px 12px;
+  color: var(--muted);
+  font: 500 13px/1.4 var(--font-serif), serif;
+  text-align: center;
+}
 /* `:not(.organ-card-image)` keeps the clickable artwork out of the footer
    button styling — both are direct children of the card. */
 .view-all, .learning-cards article > button:not(.organ-card-image) {
@@ -411,7 +416,7 @@ button:focus-visible, input:focus-visible, canvas:focus-visible {
 }
 .organ-card-image .art-fallback { font-size: 42px; }
 .organ-glyph .art-fallback { font-size: 21px; }
-.compare-organ > .art-fallback { position: absolute; inset-inline-start: 0; top: 50%; width: 38px; height: 38px; border-radius: 50%; transform: translateY(-50%); font-size: 17px; }
+.compare-organ > .art-fallback, .compare-pick > .art-fallback { position: absolute; inset-inline-start: 0; top: 50%; width: 38px; height: 38px; border-radius: 50%; transform: translateY(-50%); font-size: 17px; }
 .microscope-visual .art-fallback { font-size: 40px; }
 .modal-demo .art-fallback { font-size: 52px; }
 
@@ -444,10 +449,20 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
    pushed down by an auto top margin. */
 .system-visual { overflow: hidden; border-radius: 12px; }
 
-.compare-strip { position: fixed; z-index: 20; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(760px, calc(100% - 28px)); padding: 13px 16px; display: grid; grid-template-columns: 1fr auto 1fr 1.5fr auto; align-items: center; gap: 14px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,251,245,.94); backdrop-filter: blur(18px); box-shadow: 0 22px 60px rgba(64,43,29,.2); }
+.compare-strip { position: fixed; z-index: 20; left: 50%; bottom: 22px; transform: translateX(-50%); width: min(820px, calc(100% - 28px)); padding: 13px 16px; display: grid; grid-template-columns: 1fr auto 1fr 1.5fr auto; align-items: center; gap: 14px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,251,245,.94); backdrop-filter: blur(18px); box-shadow: 0 22px 60px rgba(64,43,29,.2); }
 .compare-strip > div { display: flex; flex-direction: column; }
 .compare-strip .compare-organ { position: relative; padding-inline-start: 45px; min-height: 38px; justify-content: center; }
-.compare-organ > img { position: absolute; inset-inline-start: 0; top: 50%; width: 38px; height: 38px; border-radius: 50%; object-fit: cover; transform: translateY(-50%); mix-blend-mode: multiply; }
+.compare-organ > img, .compare-pick > img, .compare-pick > .art-fallback {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  transform: translateY(-50%);
+  mix-blend-mode: multiply;
+}
 .compare-strip span { color: var(--lavender); font-size: 9px; text-transform: uppercase; letter-spacing: .12em; }
 .compare-strip strong { font: 500 20px var(--font-serif), serif; }
 .compare-strip small { color: var(--muted); font-size: 9px; }
@@ -456,6 +471,61 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
 .compare-strip dt { color: var(--muted); font-size: 8px; text-transform: uppercase; }
 .compare-strip dd { margin: 3px 0 0; font: 500 10px/1.2 var(--font-serif), serif; }
 .compare-strip > button { border: 0; background: transparent; cursor: pointer; }
+.compare-reference { overflow: visible; padding-inline-start: 0; }
+.compare-pick {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  min-height: 38px;
+  padding: 0;
+  padding-inline-start: 45px;
+  border: 0;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+}
+.compare-picker {
+  position: absolute;
+  z-index: 4;
+  inset-inline-start: 0;
+  bottom: calc(100% + 8px);
+  width: max(220px, 100%);
+  max-height: 280px;
+  overflow: auto;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fffaf3;
+  box-shadow: 0 16px 40px rgba(64,43,29,.18);
+}
+.compare-picker button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  text-align: start;
+  font: 500 13px var(--font-serif), serif;
+}
+.compare-picker button.active, .compare-picker button:hover { background: rgba(253,234,226,.72); }
+.compare-picker img, .compare-picker .art-fallback {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  mix-blend-mode: multiply;
+}
 
 .modal-backdrop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(52,39,30,.24); backdrop-filter: blur(8px); }
 .learning-modal { width: min(460px, 100%); max-height: min(92vh, 900px); overflow: auto; scrollbar-width: none; position: relative; padding: 32px; border: 1px solid var(--line); border-radius: 26px; background: #fffaf2; box-shadow: 0 30px 90px rgba(63,42,28,.24); text-align: center; animation: modal-in .35s cubic-bezier(.2,.85,.3,1); }
@@ -485,14 +555,14 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
 
 @media (max-width: 1350px) {
   .app-shell { padding: 16px; }
-  .topbar { grid-template-columns: 1fr auto auto auto; gap: 12px; }
+  .topbar { grid-template-columns: 1fr auto auto; gap: 12px; }
   .search-box { display: none; }
   .workspace { grid-template-columns: 250px minmax(500px,1fr) 300px; height: min(700px, calc(100vh - 105px)); }
   .learning-cards { grid-template-columns: repeat(3, 1fr); --art-max: 300px; }
 }
 
 @media (max-width: 1040px) {
-  .topbar { grid-template-columns: 1fr auto auto auto; }
+  .topbar { grid-template-columns: 1fr auto auto; }
   .main-nav button span { display: none; }
   .main-nav button { padding: 10px; }
   .workspace { grid-template-columns: 210px minmax(450px,1fr); height: 690px; }
@@ -506,7 +576,7 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
 
 @media (max-width: 760px) {
   .app-shell { padding: 10px; overflow: hidden; }
-  .topbar { height: 58px; grid-template-columns: 1fr auto auto auto; }
+  .topbar { height: 58px; grid-template-columns: 1fr auto auto; }
   .brand strong { font-size: 29px; }
   .main-nav { display: none; }
   .profile span { width: 34px; height: 34px; }
@@ -667,7 +737,7 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
 /* The prompt sits over the canvas, because the model *is* the answer sheet. */
 .quiz-bar {
   position: absolute;
-  z-index: 6;
+  z-index: 8;
   inset-inline: 90px 16px;
   top: 16px;
   display: flex;
@@ -696,6 +766,11 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.lesson-bar .quiz-prompt strong, .animation-bar .quiz-prompt strong { white-space: normal; }
+.quiz-prompt span {
+  color: #6e655f;
+  font: 500 12px/1.4 var(--font-serif), serif;
+}
 .quiz-meta { margin-inline-start: auto; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .quiz-progress { color: var(--muted); font-size: 10px; letter-spacing: .08em; }
 .quiz-pips { display: flex; gap: 5px; list-style: none; margin: 0; padding: 0; }
@@ -719,6 +794,30 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
   border-radius: 50%;
   background: transparent;
   cursor: pointer;
+}
+.animation-bar > button {
+  width: auto;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font: 500 11px var(--font-serif), serif;
+}
+.lesson-nav { display: flex; align-items: center; gap: 6px; }
+.lesson-nav button {
+  width: 30px; height: 30px;
+  display: grid; place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: rgba(255,255,255,.5);
+  cursor: pointer;
+}
+.lesson-nav button:disabled { opacity: .35; cursor: default; }
+.lesson-nav .lesson-done {
+  width: auto;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font: 500 11px var(--font-serif), serif;
 }
 
 /* Feedback sits low and wide so it never covers the dot that was just judged —
@@ -813,4 +912,90 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
   .quiz-answer-icon { width: 36px; height: 36px; }
   .quiz-answer > div strong { font-size: 17px; }
   .authoring-panel { inset-inline-start: 10px; max-width: calc(100% - 20px); bottom: 82px; }
+  .browse-panel { padding: 22px 18px 24px; }
+  .lesson-bar { flex-wrap: wrap; }
 }
+
+.lesson-bar { align-items: flex-start; }
+.lesson-bar .quiz-prompt { flex: 1; }
+
+.browse-panel {
+  width: min(980px, 100%);
+  max-height: min(88vh, 840px);
+  overflow: auto;
+  scrollbar-width: none;
+  position: relative;
+  padding: 28px 32px 32px;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  background: #fffaf2;
+  box-shadow: 0 30px 90px rgba(63,42,28,.24);
+  text-align: start;
+  animation: modal-in .35s cubic-bezier(.2,.85,.3,1);
+}
+.browse-panel > em {
+  color: var(--lavender);
+  font-family: "Comic Sans MS", "Bradley Hand", cursive;
+  font-style: italic;
+}
+.browse-panel h2 { margin: 6px 0 8px; font: 500 34px var(--font-serif), serif; }
+.browse-panel > p { margin: 0 0 18px; color: #6e655f; font: 500 15px/1.5 var(--font-serif), serif; }
+.system-group { margin-top: 22px; }
+.system-group > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.system-group h3 { margin: 0; font: 500 22px var(--font-serif), serif; }
+.system-group p { margin: 4px 0 0; color: var(--muted); font: 500 12px var(--font-serif), serif; }
+.system-group-art {
+  width: 72px;
+  height: 72px;
+  flex: none;
+  overflow: hidden;
+  border-radius: 14px;
+  background: radial-gradient(circle at 50% 42%, #fff, #f8ecdf);
+}
+.system-group-art img { width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+.catalog-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 10px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  background: rgba(255,255,255,.35);
+  cursor: pointer;
+  text-align: start;
+  color: inherit;
+}
+.catalog-card.active, .catalog-card:hover {
+  background: rgba(253,234,226,.72);
+  border-color: color-mix(in srgb, var(--item-accent), transparent 55%);
+}
+.catalog-art {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle at 35% 28%, #fff, color-mix(in srgb, var(--item-accent), white 84%));
+}
+.catalog-art img, .catalog-art .art-fallback {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  mix-blend-mode: multiply;
+}
+.catalog-card b { font: 500 16px/1.15 var(--font-serif), serif; }
+.catalog-card small { color: var(--muted); font-size: 10px; }
+
+[dir="rtl"] .lesson-nav svg { transform: scaleX(-1); }

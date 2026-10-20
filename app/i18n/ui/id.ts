@@ -11,13 +11,17 @@ export const ui: UiDictionary = {
   },
   brand: { tagline: "Belajar anatomi seperti seorang seniman", home: "Beranda Anatomy Atelier" },
   nav: { explore: "Jelajahi", systems: "Sistem", lessons: "Pelajaran", library: "Pustaka", notes: "Catatan" },
-  search: { placeholder: "Cari organ atau topik…" },
+  search: { placeholder: "Cari organ atau topik…", empty: "Tidak ada organ yang cocok dengan pencarian itu." },
   profile: { open: "Buka profil pembelajar" },
   language: { label: "Bahasa", choose: "Pilih bahasa" },
   library: {
     title: "Pustaka organ", open: "Buka pustaka organ", close: "Tutup pustaka",
     saved: "Organ tersimpan", viewAll: "Lihat semua organ",
     quoteLine1: "Belajar adalah", quoteLine2: "sebuah tindakan rasa ingin tahu.", quoteSign: "Teruslah menjelajah!",
+  },
+  browse: {
+    systemsLead: "Telusuri spesimen menurut sistem tempat organ itu berada.",
+    libraryLead: "Semua organ yang saat ini ada di atelier.",
   },
   tools: {
     label: "Alat penampil 3D", rotate: "Putar", zoom: "Perbesar", isolate: "Isolasi",
@@ -40,6 +44,7 @@ export const ui: UiDictionary = {
   compare: {
     title: "Perbandingan organ", comparing: "Membandingkan", reference: "Acuan",
     primaryRole: "Peran utama", scale: "Skala", vs: "vs.", close: "Tutup perbandingan",
+    pick: "Ganti", choose: "Pilih organ pembanding",
   },
   cards: {
     resources: "Sumber belajar: {organ}",
@@ -55,6 +60,8 @@ export const ui: UiDictionary = {
     done: "Kuis selesai", score: "{score} dari {total} benar", retry: "Coba lagi",
     exit: "Keluar dari kuis", hint: "Klik titik yang sesuai pada model",
   },
+  lesson: { next: "Lanjut", prev: "Kembali" },
+  animation: { playing: "Melihat {organ} bekerja", stop: "Hentikan animasi" },
   modal: {
     guided: "Penjelajahan terpandu", close: "Tutup", continueExploring: "Lanjutkan menjelajah",
     quizTitle: "Kuis singkat: {organ}", motionTitle: "{organ} dalam gerak",

@@ -28,13 +28,14 @@ export type UiDictionary = {
   meta: { title: string; description: string; ogTitle: string; ogDescription: string; imageAlt: string };
   brand: { tagline: string; home: string };
   nav: { explore: string; systems: string; lessons: string; library: string; notes: string };
-  search: { placeholder: string };
+  search: { placeholder: string; empty: string };
   profile: { open: string };
   language: { label: string; choose: string };
   library: {
     title: string; open: string; close: string; saved: string; viewAll: string;
     quoteLine1: string; quoteLine2: string; quoteSign: string;
   };
+  browse: { systemsLead: string; libraryLead: string };
   tools: { label: string; rotate: string; zoom: string; isolate: string; section: string; layers: string; compare: string; reset: string };
   viewer: {
     title: string; canvas: string; tip: string; tipDrag: string; tipScroll: string; tipClick: string;
@@ -45,7 +46,10 @@ export type UiDictionary = {
     location: string; bloodSupply: string; function: string; medical: string;
     didYouKnow: string; viewLesson: string; animate: string; quiz: string; compare: string;
   };
-  compare: { title: string; comparing: string; reference: string; primaryRole: string; scale: string; vs: string; close: string };
+  compare: {
+    title: string; comparing: string; reference: string; primaryRole: string;
+    scale: string; vs: string; close: string; pick: string; choose: string;
+  };
   cards: {
     resources: string; microscopic: string; compareOrgans: string; functionAnimation: string;
     clinicalNotes: string; whereItWorks: string; commonConditions: string;
@@ -56,6 +60,8 @@ export type UiDictionary = {
     start: string; find: string; progress: string; correct: string; wrong: string;
     reveal: string; answer: string; done: string; score: string; retry: string; exit: string; hint: string;
   };
+  lesson: { next: string; prev: string };
+  animation: { playing: string; stop: string };
   modal: {
     guided: string; close: string; continueExploring: string;
     quizTitle: string; motionTitle: string; bodyTitle: string; insideTitle: string;

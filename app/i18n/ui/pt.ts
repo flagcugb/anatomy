@@ -11,13 +11,17 @@ export const ui: UiDictionary = {
   },
   brand: { tagline: "Aprenda anatomia como um artista", home: "Página inicial do Anatomy Atelier" },
   nav: { explore: "Explorar", systems: "Sistemas", lessons: "Lições", library: "Biblioteca", notes: "Notas" },
-  search: { placeholder: "Buscar órgãos, temas…" },
+  search: { placeholder: "Buscar órgãos, temas…", empty: "Nenhum órgão corresponde a essa busca." },
   profile: { open: "Abrir perfil do estudante" },
   language: { label: "Idioma", choose: "Escolha um idioma" },
   library: {
     title: "Biblioteca de órgãos", open: "Abrir biblioteca de órgãos", close: "Fechar biblioteca",
     saved: "Órgãos salvos", viewAll: "Ver todos os órgãos",
     quoteLine1: "Aprender é", quoteLine2: "um ato de curiosidade.", quoteSign: "Continue explorando!",
+  },
+  browse: {
+    systemsLead: "Percorra os espécimes pelo sistema a que pertencem.",
+    libraryLead: "Todos os órgãos atualmente no atelier.",
   },
   tools: {
     label: "Ferramentas do visualizador 3D", rotate: "Girar", zoom: "Zoom", isolate: "Isolar",
@@ -40,6 +44,7 @@ export const ui: UiDictionary = {
   compare: {
     title: "Comparação de órgãos", comparing: "Comparando", reference: "Referência",
     primaryRole: "Papel principal", scale: "Escala", vs: "vs.", close: "Fechar comparação",
+    pick: "Trocar", choose: "Escolha um órgão de referência",
   },
   cards: {
     resources: "Recursos de estudo: {organ}",
@@ -55,6 +60,8 @@ export const ui: UiDictionary = {
     done: "Quiz concluído", score: "{score} de {total} corretas", retry: "Tentar de novo",
     exit: "Sair do quiz", hint: "Clique no ponto correspondente no modelo",
   },
+  lesson: { next: "Seguinte", prev: "Voltar" },
+  animation: { playing: "Observando o {organ} em ação", stop: "Parar animação" },
   modal: {
     guided: "Descoberta guiada", close: "Fechar", continueExploring: "Continuar explorando",
     quizTitle: "Quiz rápido: {organ}", motionTitle: "{organ} em movimento",
