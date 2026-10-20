@@ -249,31 +249,34 @@ export class AnatomyViewer {
     this.assets.prefetch(url);
   }
 
+  preload(urls: string[]) {
+    this.assets.preloadQueue(urls);
+  }
+
   async setOrgan(modelUrl: string, hotspots: Hotspot[], accent: string) {
     const request = ++this.loadRequest;
     this.stopFunction();
     this.clearTools();
     this.select(null);
-    this.callbacks.onLoading(true, 0);
+
+    const ready = this.assets.has(modelUrl);
+    this.callbacks.onLoading(!ready, ready ? 1 : 0);
 
     const outgoing = this.organ;
-    if (outgoing) {
-      // Switching mid-fade would otherwise leave the tween running and the
-      // depth proxies attached to a released organ.
+    if (outgoing && outgoing.url !== modelUrl) {
+      // Keep the current specimen on screen until the next one is parsed —
+      // waiting out this tween before fetch was the pause behind "preparing".
       this.fadeTween?.kill();
       this.fadeTween = null;
       this.setDepthPrepass(outgoing, false);
       this.hotspots.clear();
       this.busy(0.8);
-      await gsap.to(outgoing.pivot.scale, {
-        x: 0.72, y: 0.72, z: 0.72,
-        duration: 0.34,
+      gsap.to(outgoing.pivot.scale, {
+        x: 0.86, y: 0.86, z: 0.86,
+        duration: 0.28,
         ease: "power2.in",
         onUpdate: () => (this.dirty = true),
       });
-      this.assets.release(outgoing);
-      this.organ = null;
-      this.dirty = true;
     }
 
     this.tween(this.camera.position, { z: 9.2, duration: 0.42, ease: "power2.inOut" });
@@ -281,7 +284,9 @@ export class AnatomyViewer {
     let organ: LoadedOrgan;
     try {
       organ = await this.assets.load(modelUrl, (progress) => {
-        if (request === this.loadRequest) this.callbacks.onLoading(true, progress);
+        if (request !== this.loadRequest) return;
+        if (progress >= 1) this.callbacks.onLoading(false, 1);
+        else this.callbacks.onLoading(true, progress);
       });
     } catch (error) {
       if (request === this.loadRequest) this.callbacks.onLoading(false, 0);
@@ -289,6 +294,12 @@ export class AnatomyViewer {
     }
     if (request !== this.loadRequest || this.disposed) return;
 
+    if (outgoing && outgoing !== organ) {
+      gsap.killTweensOf(outgoing.pivot.scale);
+      this.assets.release(outgoing);
+    }
+
+    this.assets.activate(organ);
     this.organ = organ;
     organ.pivot.scale.setScalar(1);
     organ.pivot.position.set(0, 0, 0);

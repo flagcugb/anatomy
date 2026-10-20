@@ -22,7 +22,7 @@ import {
   X,
 } from "lucide-react";
 import { BodyMap } from "./BodyMap";
-import { OrganViewer } from "./OrganViewer";
+import { OrganViewer, type OrganViewerHandle } from "./OrganViewer";
 import type { OrganId } from "../lib/anatomy-data";
 import type { LocaleConfig } from "../i18n/config";
 import { locales } from "../i18n/config";
@@ -154,8 +154,9 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
   const [lessonActive, setLessonActive] = useState(false);
   const [animating, setAnimating] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
-  const prefetched = useRef(new Set<OrganId>());
+  const viewerRef = useRef<OrganViewerHandle>(null);
   const organ = organById[organId];
+  const modelUrls = useMemo(() => organs.map((item) => withBasePath(item.model)), [organs]);
   const reference = compareId && compareId !== organId ? organById[compareId] : null;
   const filteredOrgans = useMemo(() => {
     const needle = query.trim().toLocaleLowerCase(locale.code);
@@ -187,12 +188,10 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     if (compareId === id) setCompareId(fallbackCompare(id));
   };
 
-  // Warms the model in the HTTP cache while the pointer is still travelling,
-  // so the switch usually renders without a visible loading pass.
+  // Parses the hovered organ into the GPU cache (queue front) before the click.
   const prefetchOrgan = (id: OrganId) => {
-    if (id === organId || prefetched.current.has(id)) return;
-    prefetched.current.add(id);
-    void fetch(withBasePath(organById[id].model), { priority: "low" } as RequestInit).catch(() => {});
+    if (id === organId) return;
+    viewerRef.current?.prefetch(withBasePath(organById[id].model));
   };
 
   const openExplore = () => {
@@ -292,6 +291,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
         </aside>
 
         <OrganViewer
+          ref={viewerRef}
           organ={organ}
           t={t}
           autoRotate={autoRotate}
@@ -304,6 +304,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
           onLessonExit={() => setLessonActive(false)}
           animating={animating}
           onAnimateStop={() => setAnimating(false)}
+          modelUrls={modelUrls}
         />
 
         <aside className="info-panel" ref={contentRef}>

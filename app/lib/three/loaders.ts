@@ -7,7 +7,7 @@ import { disposeObject } from "./dispose";
  *  coordinates authored in `anatomy-data` mean the same thing for each model. */
 export const FIT_SIZE = 3.8;
 
-const CACHE_LIMIT = 3;
+const CACHE_LIMIT = 9;
 
 export type LoadedOrgan = {
   url: string;
@@ -21,6 +21,9 @@ export class AnatomyAssetManager {
   private loader: GLTFLoader;
   private cache = new Map<string, LoadedOrgan>();
   private inflight = new Map<string, Promise<LoadedOrgan>>();
+  private queue: string[] = [];
+  private pumping = false;
+  private displayLoads = 0;
   private current: LoadedOrgan | null = null;
   private maxAnisotropy: number;
 
@@ -35,10 +38,29 @@ export class AnatomyAssetManager {
     return Boolean(this.current?.mixer);
   }
 
-  /** Warms the HTTP cache so switching organs feels instant. */
+  has(url: string) {
+    return this.cache.has(url);
+  }
+
+  /** Marks a parsed organ as the one whose mixer the viewer should tick. */
+  activate(organ: LoadedOrgan) {
+    this.current = organ;
+  }
+
+  /** Parses into the GPU cache. Hover jumps this URL to the front of the idle queue. */
   prefetch(url: string) {
     if (this.cache.has(url) || this.inflight.has(url)) return;
-    void fetch(url, { priority: "low" } as RequestInit).catch(() => {});
+    this.queue = [url, ...this.queue.filter((item) => item !== url)];
+    void this.pump();
+  }
+
+  /** Sequential idle parse of remaining organs. Skips anything already cached or in flight. */
+  preloadQueue(urls: string[]) {
+    for (const url of urls) {
+      if (this.cache.has(url) || this.inflight.has(url) || this.queue.includes(url)) continue;
+      this.queue.push(url);
+    }
+    void this.pump();
   }
 
   async load(url: string, onProgress?: (progress: number) => void): Promise<LoadedOrgan> {
@@ -48,27 +70,56 @@ export class AnatomyAssetManager {
       this.cache.set(url, cached);
       this.resetMaterials(cached);
       onProgress?.(1);
-      this.current = cached;
       return cached;
     }
 
-    const pending = this.inflight.get(url) ?? this.parse(url, onProgress);
-    this.inflight.set(url, pending);
+    this.displayLoads += 1;
     try {
-      const organ = await pending;
-      this.cache.set(url, organ);
-      this.evict();
-      this.current = organ;
+      const organ = await this.warm(url, onProgress);
+      onProgress?.(1);
       return organ;
     } finally {
-      this.inflight.delete(url);
+      this.displayLoads -= 1;
+      void this.pump();
+    }
+  }
+
+  private warm(url: string, onProgress?: (progress: number) => void): Promise<LoadedOrgan> {
+    const pending = this.inflight.get(url) ?? this.parse(url, onProgress).then((organ) => {
+      this.cache.set(url, organ);
+      this.evict();
+      return organ;
+    });
+    this.inflight.set(url, pending);
+    return pending.finally(() => {
+      if (this.inflight.get(url) === pending) this.inflight.delete(url);
+    });
+  }
+
+  private async pump() {
+    if (this.pumping || this.displayLoads > 0) return;
+    this.pumping = true;
+    try {
+      while (this.queue.length && this.displayLoads === 0) {
+        const url = this.queue.shift();
+        if (!url || this.cache.has(url) || this.inflight.has(url)) continue;
+        try {
+          await this.warm(url);
+        } catch {
+          // Idle warm-up; a missing model must not stall the rest of the queue.
+        }
+      }
+    } finally {
+      this.pumping = false;
+      if (this.queue.length && this.displayLoads === 0) void this.pump();
     }
   }
 
   private async parse(url: string, onProgress?: (progress: number) => void): Promise<LoadedOrgan> {
     const gltf = await this.loader.loadAsync(url, (event) => {
-      if (event.total > 0) onProgress?.(event.loaded / event.total);
+      if (event.total > 0) onProgress?.(Math.min(0.9, event.loaded / event.total));
     });
+    onProgress?.(0.94);
 
     const model = gltf.scene;
     const box = new THREE.Box3().setFromObject(model);
@@ -206,8 +257,10 @@ export class AnatomyAssetManager {
   }
 
   dispose() {
+    this.queue = [];
     this.release();
     this.cache.forEach((organ) => this.destroy(organ));
     this.cache.clear();
+    this.inflight.clear();
   }
 }

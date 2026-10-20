@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import {
   Box,
   ChevronLeft,
@@ -35,6 +35,12 @@ type Props = {
   onLessonExit: () => void;
   animating: boolean;
   onAnimateStop: () => void;
+  /** All organ GLB URLs (with base path) so idle preload can warm the rest. */
+  modelUrls: string[];
+};
+
+export type OrganViewerHandle = {
+  prefetch: (url: string) => void;
 };
 
 function motionFor(id: OrganId): "pulse" | "breathe" | "wave" {
@@ -259,13 +265,15 @@ function useAuthoringFlag() {
   );
 }
 
-export function OrganViewer({
+export const OrganViewer = forwardRef<OrganViewerHandle, Props>(function OrganViewer({
   organ, t, autoRotate, onAutoRotate, compare, onCompare,
   quizActive, onQuizExit, lessonActive, onLessonExit, animating, onAnimateStop,
-}: Props) {
+  modelUrls,
+}: Props, ref) {
   const mountRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<AnatomyViewer | null>(null);
   const organRef = useRef(organ);
+  const modelUrlsRef = useRef(modelUrls);
   const autoRotateRef = useRef(autoRotate);
   const canvasLabelRef = useRef(t.viewer.canvas);
   const [selected, setSelected] = useState<Hotspot | null>(null);
@@ -304,6 +312,20 @@ export function OrganViewer({
   }, [organ]);
 
   useEffect(() => {
+    modelUrlsRef.current = modelUrls;
+  }, [modelUrls]);
+
+  useImperativeHandle(ref, () => ({
+    prefetch(url: string) {
+      viewerRef.current?.prefetch(url);
+    },
+  }), []);
+
+  const warmRest = (viewer: AnatomyViewer, currentUrl: string) => {
+    viewer.preload(modelUrlsRef.current.filter((url) => url !== currentUrl));
+  };
+
+  useEffect(() => {
     autoRotateRef.current = autoRotate;
   }, [autoRotate]);
 
@@ -318,7 +340,7 @@ export function OrganViewer({
 
     void import("../lib/three/viewer").then(({ AnatomyViewer: Viewer }) => {
       if (cancelled || !mountRef.current) return;
-      viewer = new Viewer(mountRef.current, {
+      const instance = new Viewer(mountRef.current, {
         onSelect: setSelected,
         onLoading: (isLoading, value) => {
           setLoading(isLoading);
@@ -328,12 +350,16 @@ export function OrganViewer({
         onPick: (hotspot) => pickRef.current(hotspot),
         onAuthorPoint: (point) => authorRef.current(point),
       });
-      viewerRef.current = viewer;
-      viewer.setCanvasLabel(canvasLabelRef.current);
-      viewer.setAutoRotate(autoRotateRef.current);
-      viewer.setAuthoring(authoringRef.current);
+      viewer = instance;
+      viewerRef.current = instance;
+      instance.setCanvasLabel(canvasLabelRef.current);
+      instance.setAutoRotate(autoRotateRef.current);
+      instance.setAuthoring(authoringRef.current);
       const current = organRef.current;
-      viewer.setOrgan(withBasePath(current.model), current.hotspots, current.accent).catch(() => {
+      const url = withBasePath(current.model);
+      instance.setOrgan(url, current.hotspots, current.accent).then(() => {
+        if (!cancelled) warmRest(instance, url);
+      }).catch(() => {
         setLoading(false);
         setProgress(0);
       });
@@ -347,7 +373,12 @@ export function OrganViewer({
   }, []);
 
   useEffect(() => {
-    viewerRef.current?.setOrgan(withBasePath(organ.model), organ.hotspots, organ.accent).catch(() => {
+    const viewer = viewerRef.current;
+    if (!viewer) return;
+    const url = withBasePath(organ.model);
+    viewer.setOrgan(url, organ.hotspots, organ.accent).then(() => {
+      warmRest(viewer, url);
+    }).catch(() => {
       setLoading(false);
       setProgress(0);
     });
@@ -509,7 +540,7 @@ export function OrganViewer({
         <div className="model-loader" role="status" aria-live="polite">
           <div className="loader-orbit"><Maximize2 size={20} /></div>
           <strong>{format(t.viewer.loading, { organ: organ.name })}</strong>
-          <span>{Math.max(8, Math.round(progress * 100))}%</span>
+          <span>{Math.round(progress * 100)}%</span>
         </div>
       )}
 
@@ -526,4 +557,4 @@ export function OrganViewer({
       </div>
     </section>
   );
-}
+});
