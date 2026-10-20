@@ -374,6 +374,68 @@ button:focus-visible, input:focus-visible, canvas:focus-visible {
 .action-grid button:last-child { grid-column: 1/-1; border-color: #b9c6e3; color: #6e88bd; }
 .action-grid button.active { background: rgba(111,137,192,.1); box-shadow: inset 0 0 0 1px #8ca2d0; }
 
+/* Lesson / quiz live in the info panel so a tap on 查看课程 or 测验
+   shows its content where the finger is, not on the 3D stage above. */
+.info-dock:empty { display: none; }
+.info-dock { margin-top: 14px; }
+.info-dock .quiz-bar,
+.info-dock .lesson-bar {
+  position: relative;
+  inset: auto;
+  z-index: 1;
+  flex-wrap: wrap;
+  padding: 14px 14px 12px;
+}
+.info-dock .quiz-meta {
+  margin-inline-start: 0;
+  width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.info-dock .quiz-answer,
+.info-dock .quiz-summary {
+  position: relative;
+  left: auto;
+  top: auto;
+  bottom: auto;
+  transform: none;
+  width: 100%;
+  min-width: 0;
+  margin-top: 10px;
+  animation: info-dock-in .26s cubic-bezier(.2,.85,.3,1);
+}
+.info-dock .quiz-answer.at-top { top: auto; }
+.info-dock .quiz-summary {
+  box-shadow: none;
+  padding: 20px 16px 16px;
+}
+@keyframes info-dock-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+.quiz-choices {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.quiz-choices button {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(255,255,255,.55);
+  cursor: pointer;
+  text-align: start;
+  font: 500 13px var(--font-serif), serif;
+}
+.quiz-choices button:active { background: rgba(237, 138, 114, .12); }
+
 .learning-cards {
   /* Cap on the artwork box. The source illustrations are square, so this is
      both the height and the width they letterbox into — raising it fills more
@@ -568,6 +630,7 @@ button.organ-card-image:focus-visible { outline: 2px solid #8b6fc4; outline-offs
   .workspace { grid-template-columns: 210px minmax(450px,1fr); height: 690px; }
   .info-panel { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1.2fr; gap: 12px 22px; max-height: none; }
   .info-panel .description, .info-panel .rule, .info-panel h2, .key-facts, .medical-note { grid-column: 2; }
+  .info-dock, .lesson-button, .action-grid, .fun-note { grid-column: 1 / -1; }
   .info-kicker, .info-title-row { grid-column: 1; }
   .info-panel { height: 330px; }
   .workspace { height: auto; }

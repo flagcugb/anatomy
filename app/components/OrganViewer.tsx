@@ -30,21 +30,25 @@ type Props = {
   compare: boolean;
   onCompare: () => void;
   quizActive: boolean;
-  onQuizExit: () => void;
   lessonActive: boolean;
-  onLessonExit: () => void;
   animating: boolean;
   onAnimateStop: () => void;
   /** All organ GLB URLs (with base path) so idle preload can warm the rest. */
   modelUrls: string[];
-  lessonEntry: LessonEntry;
+  /** Written by the docked LabelQuiz; 3D hotspot picks go through here. */
+  quizPickRef: PickRef;
 };
 
 export type LessonEntry = "start" | "clinical";
 
+export type PickRef = { current: (hotspot: Hotspot) => void };
+
 export type OrganViewerHandle = {
   prefetch: (url: string) => void;
   reveal: () => void;
+  focusHotspot: (id: string | null) => void;
+  flash: (id: string, correct: boolean) => void;
+  hotspotScreenY: (id: string) => number | null;
 };
 
 function motionFor(id: OrganId): "pulse" | "breathe" | "wave" {
@@ -63,8 +67,6 @@ function shuffle<T>(items: T[]): T[] {
   return out;
 }
 
-type PickRef = { current: (hotspot: Hotspot) => void };
-
 type LessonStep =
   | { type: "overview" }
   | { type: "facts" }
@@ -82,7 +84,7 @@ function buildLesson(organ: Organ): LessonStep[] {
   ];
 }
 
-function LessonTour({
+export function LessonTour({
   organ, t, onFocus, onExit, entry,
 }: {
   organ: Organ;
@@ -153,8 +155,8 @@ function LessonTour({
  * The labelling quiz. Owns its own round state and is mounted with a `key` per
  * organ, so switching specimens restarts it without a resetting effect.
  */
-function LabelQuiz({
-  hotspots, t, pickRef, flash, screenY, onExit,
+export function LabelQuiz({
+  hotspots, t, pickRef, flash, screenY, onExit, docked = false,
 }: {
   hotspots: Hotspot[];
   t: UiDictionary;
@@ -162,6 +164,7 @@ function LabelQuiz({
   flash: (id: string, correct: boolean) => void;
   screenY: (id: string) => number | null;
   onExit: () => void;
+  docked?: boolean;
 }) {
   const [seed, setSeed] = useState(0);
   const [step, setStep] = useState(0);
@@ -170,6 +173,9 @@ function LabelQuiz({
   const [results, setResults] = useState<boolean[]>([]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const order = useMemo(() => shuffle(hotspots), [hotspots, seed]);
+  // Independent of `order` so the correct label is not sitting at the top of the list.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const choices = useMemo(() => shuffle(hotspots), [hotspots, seed]);
   const target = order[step];
   const finished = step >= order.length;
 
@@ -223,10 +229,22 @@ function LabelQuiz({
                 />
               ))}
             </ol>
-            <small>{t.quiz.hint}</small>
+            {!docked && <small>{t.quiz.hint}</small>}
           </div>
           <button type="button" onClick={onExit} aria-label={t.quiz.exit}><X size={16} /></button>
         </div>
+      )}
+
+      {docked && target && !answer && (
+        <ul className="quiz-choices">
+          {choices.map((hotspot) => (
+            <li key={hotspot.id}>
+              <button type="button" onClick={() => pickRef.current(hotspot)}>
+                {hotspot.label}
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
 
       {answer && (
@@ -272,8 +290,8 @@ function useAuthoringFlag() {
 
 export const OrganViewer = forwardRef<OrganViewerHandle, Props>(function OrganViewer({
   organ, t, autoRotate, onAutoRotate, compare, onCompare,
-  quizActive, onQuizExit, lessonActive, onLessonExit, animating, onAnimateStop,
-  modelUrls, lessonEntry,
+  quizActive, lessonActive, animating, onAnimateStop,
+  modelUrls, quizPickRef,
 }: Props, ref) {
   const mountRef = useRef<HTMLDivElement>(null);
   const shellRef = useRef<HTMLElement>(null);
@@ -295,7 +313,6 @@ export const OrganViewer = forwardRef<OrganViewerHandle, Props>(function OrganVi
   const [copied, setCopied] = useState(false);
 
   // The viewer captures its callbacks once, so live handlers go through refs.
-  const pickRef = useRef<(hotspot: Hotspot) => void>(() => {});
   const authorRef = useRef<(point: { x: number; y: number; z: number }) => void>(() => {});
   useEffect(() => {
     authorRef.current = setAuthorPoint;
@@ -328,6 +345,15 @@ export const OrganViewer = forwardRef<OrganViewerHandle, Props>(function OrganVi
     reveal() {
       shellRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
     },
+    focusHotspot(id: string | null) {
+      viewerRef.current?.focusHotspot(id);
+    },
+    flash(id: string, correct: boolean) {
+      viewerRef.current?.flash(id, correct);
+    },
+    hotspotScreenY(id: string) {
+      return viewerRef.current?.hotspotScreenY(id) ?? null;
+    },
   }), []);
 
   const warmRest = (viewer: AnatomyViewer, currentUrl: string) => {
@@ -356,7 +382,7 @@ export const OrganViewer = forwardRef<OrganViewerHandle, Props>(function OrganVi
           setProgress(value);
           if (isLoading) setSlowLoad(false);
         },
-        onPick: (hotspot) => pickRef.current(hotspot),
+        onPick: (hotspot) => quizPickRef.current(hotspot),
         onAuthorPoint: (point) => authorRef.current(point),
       });
       viewer = instance;
@@ -410,11 +436,6 @@ export const OrganViewer = forwardRef<OrganViewerHandle, Props>(function OrganVi
     if (animating) viewer.playFunction(motionFor(organ.id), organ.hotspots.map((hotspot) => hotspot.id));
     else viewer.stopFunction();
   }, [animating, organ]);
-
-  const focusHotspot = useCallback((id: string | null) => {
-    viewerRef.current?.focusHotspot(id);
-  }, []);
-
 
   // The viewer drives the callout's position directly, so a spinning model
   // never costs a React render.
@@ -494,29 +515,6 @@ export const OrganViewer = forwardRef<OrganViewerHandle, Props>(function OrganVi
           <li key={hotspot.id}>{hotspot.label}: {hotspot.detail}</li>
         ))}
       </ul>
-
-      {quizActive && (
-        <LabelQuiz
-          key={organ.id}
-          hotspots={organ.hotspots}
-          t={t}
-          pickRef={pickRef}
-          flash={(id, correct) => viewerRef.current?.flash(id, correct)}
-          screenY={(id) => viewerRef.current?.hotspotScreenY(id) ?? null}
-          onExit={onQuizExit}
-        />
-      )}
-
-      {lessonActive && (
-        <LessonTour
-          key={`${organ.id}-${lessonEntry}`}
-          organ={organ}
-          t={t}
-          entry={lessonEntry}
-          onFocus={focusHotspot}
-          onExit={onLessonExit}
-        />
-      )}
 
       {animating && (
         <div className="quiz-bar animation-bar" role="status">

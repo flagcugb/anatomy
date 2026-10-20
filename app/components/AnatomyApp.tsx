@@ -22,7 +22,7 @@ import {
   X,
 } from "lucide-react";
 import { BodyMap } from "./BodyMap";
-import { OrganViewer, type LessonEntry, type OrganViewerHandle } from "./OrganViewer";
+import { OrganViewer, LessonTour, LabelQuiz, type LessonEntry, type OrganViewerHandle, type PickRef } from "./OrganViewer";
 import type { OrganId } from "../lib/anatomy-data";
 import type { LocaleConfig } from "../i18n/config";
 import { locales } from "../i18n/config";
@@ -155,7 +155,9 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
   const [lessonEntry, setLessonEntry] = useState<LessonEntry>("start");
   const [animating, setAnimating] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
+  const dockRef = useRef<HTMLDivElement>(null);
   const viewerRef = useRef<OrganViewerHandle>(null);
+  const quizPickRef = useRef<PickRef["current"]>(() => {});
   const organ = organById[organId];
   const modelUrls = useMemo(() => organs.map((item) => withBasePath(item.model)), [organs]);
   const reference = compareId && compareId !== organId ? organById[compareId] : null;
@@ -207,7 +209,6 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     setAnimating(false);
     setLessonEntry(entry);
     setLessonActive(true);
-    viewerRef.current?.reveal();
   };
 
   const startQuiz = () => {
@@ -216,6 +217,11 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     setAnimating(false);
     setQuizActive(true);
   };
+
+  useEffect(() => {
+    if (!lessonActive && !quizActive) return;
+    dockRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [lessonActive, quizActive, lessonEntry]);
 
   const startAnimation = () => {
     setPanel(null);
@@ -302,13 +308,11 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
           compare={Boolean(reference)}
           onCompare={toggleCompare}
           quizActive={quizActive}
-          onQuizExit={() => setQuizActive(false)}
           lessonActive={lessonActive}
-          lessonEntry={lessonEntry}
-          onLessonExit={() => setLessonActive(false)}
           animating={animating}
           onAnimateStop={() => setAnimating(false)}
           modelUrls={modelUrls}
+          quizPickRef={quizPickRef}
         />
 
         <aside className="info-panel" ref={contentRef}>
@@ -332,11 +336,35 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
           </dl>
           <div className="medical-note" data-reveal><Stethoscope size={16} /><p><b>{t.info.medical}</b>{organ.medical}</p></div>
           <div className="fun-note" data-reveal><Sparkles size={15} /><p><b>{t.info.didYouKnow}</b>{organ.funFact}</p></div>
+          <div className="info-dock" ref={dockRef}>
+            {lessonActive && (
+              <LessonTour
+                key={`${organ.id}-${lessonEntry}`}
+                organ={organ}
+                t={t}
+                entry={lessonEntry}
+                onFocus={(id) => viewerRef.current?.focusHotspot(id)}
+                onExit={() => setLessonActive(false)}
+              />
+            )}
+            {quizActive && (
+              <LabelQuiz
+                key={organ.id}
+                hotspots={organ.hotspots}
+                t={t}
+                pickRef={quizPickRef}
+                flash={(id, correct) => viewerRef.current?.flash(id, correct)}
+                screenY={(id) => viewerRef.current?.hotspotScreenY(id) ?? null}
+                onExit={() => setQuizActive(false)}
+                docked
+              />
+            )}
+          </div>
           <button className="lesson-button" data-reveal onClick={() => startLesson()}>{t.info.viewLesson} <ArrowRight size={16} /></button>
           <div className="action-grid" data-reveal>
-            <button onClick={startAnimation} className={animating ? "active" : ""}><Play size={15} /> {t.info.animate}</button>
-            <button onClick={startQuiz} className={quizActive ? "active" : ""}><CircleHelp size={15} /> {t.info.quiz}</button>
-            <button onClick={toggleCompare} className={reference ? "active" : ""}><Share2 size={15} /> {t.info.compare}</button>
+            <button type="button" onClick={startAnimation} className={animating ? "active" : ""}><Play size={15} /> {t.info.animate}</button>
+            <button type="button" onClick={startQuiz} className={quizActive ? "active" : ""}><CircleHelp size={15} /> {t.info.quiz}</button>
+            <button type="button" onClick={toggleCompare} className={reference ? "active" : ""}><Share2 size={15} /> {t.info.compare}</button>
           </div>
         </aside>
       </div>
