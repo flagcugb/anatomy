@@ -148,6 +148,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
   const [compareId, setCompareId] = useState<OrganId | null>(null);
   const [pickingCompare, setPickingCompare] = useState(false);
   const [panel, setPanel] = useState<Panel>(null);
+  const [systemOpen, setSystemOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [mobileLibrary, setMobileLibrary] = useState(false);
   const [quizActive, setQuizActive] = useState(false);
@@ -184,6 +185,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
     setOrganId(id);
     setMobileLibrary(false);
     setPanel(null);
+    setSystemOpen(false);
     setQuizActive(false);
     setLessonActive(false);
     setAnimating(false);
@@ -199,12 +201,22 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
 
   const openExplore = () => {
     setPanel(null);
+    setSystemOpen(false);
     setLessonActive(false);
     setAnimating(false);
   };
 
+  const openSystemCard = () => {
+    setPanel(null);
+    setQuizActive(false);
+    setLessonActive(false);
+    setAnimating(false);
+    setSystemOpen(true);
+  };
+
   const startLesson = (entry: LessonEntry = "start") => {
     setPanel(null);
+    setSystemOpen(false);
     setQuizActive(false);
     setAnimating(false);
     setLessonEntry(entry);
@@ -213,6 +225,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
 
   const startQuiz = () => {
     setPanel(null);
+    setSystemOpen(false);
     setLessonActive(false);
     setAnimating(false);
     setQuizActive(true);
@@ -225,6 +238,7 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
 
   const startAnimation = () => {
     setPanel(null);
+    setSystemOpen(false);
     setQuizActive(false);
     setLessonActive(false);
     setAnimating(true);
@@ -248,13 +262,13 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
           <button type="button" className={nav === "explore" ? "active" : ""} onClick={openExplore}>
             <Compass size={17} /> {t.nav.explore}
           </button>
-          <button type="button" className={nav === "systems" ? "active" : ""} onClick={() => setPanel(panel === "systems" ? null : "systems")}>
+          <button type="button" className={nav === "systems" ? "active" : ""} onClick={() => { setSystemOpen(false); setPanel(panel === "systems" ? null : "systems"); }}>
             <BrainCircuit size={17} /> {t.nav.systems}
           </button>
           <button type="button" className={nav === "lessons" ? "active" : ""} onClick={() => startLesson()}>
             <BookOpen size={17} /> {t.nav.lessons}
           </button>
-          <button type="button" className={nav === "library" ? "active" : ""} onClick={() => setPanel(panel === "library" ? null : "library")}>
+          <button type="button" className={nav === "library" ? "active" : ""} onClick={() => { setSystemOpen(false); setPanel(panel === "library" ? null : "library"); }}>
             <LibraryBig size={17} /> {t.nav.library}
           </button>
         </nav>
@@ -450,15 +464,39 @@ export function AnatomyApp({ locale, dictionary }: { locale: LocaleConfig; dicti
           <button
             type="button"
             className="system-visual organ-card-image"
-            onClick={() => setPanel("systems")}
+            onClick={openSystemCard}
             aria-label={format(t.cards.systemAria, { organ: organ.name })}
           >
             <OrganArt organ={organ} asset="location" alt="" />
           </button>
-          <button onClick={() => setPanel("systems")}>{t.cards.seeSystem} <ArrowRight size={14} /></button>
+          <button onClick={openSystemCard}>{t.cards.seeSystem} <ArrowRight size={14} /></button>
         </article>
       </section>
 
+      {systemOpen && (
+        <div className="modal-backdrop" role="presentation" onMouseDown={() => setSystemOpen(false)}>
+          <section
+            className="learning-modal wide"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="system-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <button className="modal-close" onClick={() => setSystemOpen(false)} aria-label={t.modal.close}><X size={18} /></button>
+            <em>{t.cards.whereItWorks}</em>
+            <h2 id="system-title">{format(t.modal.bodyTitle, { organ: organ.name })}</h2>
+            <p>{format(t.modal.systemIntro, { location: organ.location, organ: organ.name })}</p>
+            <div className="modal-figure">
+              <OrganArt organ={organ} asset="location" alt={format(t.modal.bodyTitle, { organ: organ.name })} />
+            </div>
+            <dl className="modal-facts">
+              <div><dt>{t.modal.system}</dt><dd>{organ.system}</dd></div>
+              <div><dt>{t.modal.primaryRole}</dt><dd><Measure>{organ.function}</Measure></dd></div>
+              <div><dt>{t.modal.bloodSupply}</dt><dd><Measure>{organ.bloodSupply}</Measure></dd></div>
+            </dl>
+          </section>
+        </div>
+      )}
       {panel === "systems" && (
         <div className="modal-backdrop browse-backdrop" role="presentation" onMouseDown={() => setPanel(null)}>
           <section
